@@ -77,3 +77,318 @@ html {
 .animate-beam-vertical {
   animation: beam-vertical 8s linear infinite;
 }
+
+/* Dashboard styles */
+.dashboard-root {
+  display: flex;
+  min-height: 100vh;
+  background: #181825;
+  color: #fff;
+}
+.sidebar {
+  width: 240px;
+  background: #13131a;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0 16px 0;
+  border-radius: 16px 0 0 16px;
+}
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 32px;
+}
+.logo-icon {
+  background: linear-gradient(90deg,#a259ff,#ff6bcb);
+  border-radius: 50%;
+  padding: 6px 10px;
+  color: #fff;
+}
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar nav ul li {
+  padding: 12px 32px;
+  margin-bottom: 8px;
+  border-radius: 8px 0 0 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sidebar nav ul li.active,
+.sidebar nav ul li:hover {
+  background: linear-gradient(90deg,#a259ff33,#ff6bcb33);
+}
+.settings {
+  margin-top: auto;
+  padding: 12px 32px;
+  color: #a259ff;
+  cursor: pointer;
+}
+.dashboard-main {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.dashboard-header h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+.dashboard-user {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: url('https://randomuser.me/api/portraits/women/44.jpg') center/cover;
+  border: 2px solid #a259ff;
+}
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.dashboard-row {
+  display: flex;
+  gap: 24px;
+}
+.dashboard-card {
+  background: #23233a;
+  border-radius: 16px;
+  padding: 24px;
+  flex: 1;
+  min-width: 0;
+  box-shadow: 0 2px 16px #0002;
+}
+.dashboard-spend {
+  flex: 2;
+}
+.spend-amount {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 8px 0;
+}
+.spend-change {
+  color: #4ade80;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.spend-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.spend-tabs button {
+  background: #23233a;
+  color: #fff;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.spend-tabs button.active,
+.spend-tabs button:hover {
+  background: linear-gradient(90deg,#a259ff,#ff6bcb);
+}
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 120px;
+  margin-top: 16px;
+}
+.bar {
+  width: 18px;
+  height: 60px;
+  background: #23233a;
+  border-radius: 6px 6px 0 0;
+  transition: height 0.2s;
+}
+.bar-active {
+  height: 100px;
+  background: linear-gradient(180deg,#a259ff,#ff6bcb);
+  box-shadow: 0 0 16px #ff6bcb88;
+}
+.dashboard-categories .category-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.category-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  margin: 0 8px;
+}
+.category-bar.food {
+  background: linear-gradient(90deg,#a259ff,#ff6bcb);
+}
+.category-bar.transport {
+  background: linear-gradient(90deg,#00cfff,#a259ff);
+}
+.category-bar.entertainment {
+  background: linear-gradient(90deg,#ff6bcb,#a259ff);
+}
+.dashboard-budget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.budget-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: conic-gradient(#a259ff 0% 72%, #23233a 72% 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.budget-circle span:last-child {
+  font-size: 1rem;
+  color: #a259ff;
+}
+.dashboard-transactions .transaction-list {
+  margin-top: 16px;
+}
+.transaction {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+.transaction .icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #fff;
+  margin-right: 8px;
+}
+.transaction.netflix .icon {
+  background: #e50914;
+}
+.transaction.uber .icon {
+  background: #000;
+}
+.transaction.salary .icon {
+  background: #22c55e;
+}
+.transaction .amount {
+  margin-left: auto;
+  font-weight: bold;
+}
+.transaction .amount.credit {
+  color: #22c55e;
+}
+.transaction .date {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+.dashboard-transactions .view-all {
+  color: #a259ff;
+  float: right;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.dashboard-recurring .recurring-list {
+  margin-top: 16px;
+}
+.recurring {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+.recurring .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a259ff;
+  margin-right: 4px;
+}
+.recurring-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,#a259ff,#ff6bcb);
+  margin: 0 8px;
+}
+.recurring .due {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+.next-days {
+  color: #a259ff;
+  float: right;
+  font-size: 0.95rem;
+}
+
+/* Login/Signup styles */
+.login-container, .signup-container {
+  max-width: 400px;
+  margin: 80px auto;
+  background: #23233a;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #0002;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.login-container h2, .signup-container h2 {
+  margin-bottom: 24px;
+}
+.login-container form, .signup-container form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.login-container input, .signup-container input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #181825;
+  color: #fff;
+  font-size: 1rem;
+}
+.login-container button, .signup-container button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg,#a259ff,#ff6bcb);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+}

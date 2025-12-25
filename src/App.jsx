@@ -1,34 +1,62 @@
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Stats from './components/Stats'
-import Features from './components/Features'
-import HowItWorks from './components/HowItWorks'
-import ChatDemo from './components/ChatDemo'
-import Security from './components/Security'
-import CTA from './components/CTA'
-import Footer from './components/Footer'
-import GlowCurvedLine from './components/GlowCurvedLine'
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Stats from "./components/Stats";
+import Features from "./components/Features";
+import HowItWorks from "./components/HowItWorks";
+import ChatDemo from "./components/ChatDemo";
+import Security from "./components/Security";
+import CTA from "./components/CTA";
+import Footer from "./components/Footer";
+import GlowCurvedLine from "./components/GlowCurvedLine";
+import Dashboard from "./components/Dashboard";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const [isAuthenticated, setAuthenticated] = useState(false);
+
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white relative overflow-hidden">
-      {/* Side Glow Effects */}
-      <GlowCurvedLine className="fixed top-0 left-0 h-screen w-24 -translate-x-1/2 z-0" color="purple" />
-      <GlowCurvedLine className="fixed top-0 right-0 h-screen w-24 translate-x-1/2 rotate-180 z-0" color="cyan" />
-      
-      <Navbar />
-      <main className="relative z-10">
-        <Hero />
-        <Stats />
-        <Features />
-        <HowItWorks />
-        <ChatDemo />
-        <Security />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
-  )
+    <Router>
+      <div className="min-h-screen bg-[#0a0a0f] text-white relative overflow-hidden">
+        {/* Side Glow Effects */}
+        <GlowCurvedLine className="fixed top-0 left-0 h-screen w-24 -translate-x-1/2 z-0" color="purple" />
+        <GlowCurvedLine className="fixed top-0 right-0 h-screen w-24 translate-x-1/2 rotate-180 z-0" color="cyan" />
+        <Routes>
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/login" element={<Login setAuthenticated={setAuthenticated} />} />
+          <Route path="/signup" element={<Signup setAuthenticated={setAuthenticated} />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <Navbar />
+                <main className="relative z-10">
+                  <Hero />
+                  <Stats />
+                  <Features />
+                  <HowItWorks />
+                  <ChatDemo />
+                  <Security />
+                  <CTA />
+                </main>
+                <Footer />
+              </>
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;
