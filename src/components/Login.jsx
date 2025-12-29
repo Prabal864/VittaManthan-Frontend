@@ -27,24 +27,113 @@ const Login = ({ setAuthenticated }) => {
   };
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Login</button>
-        {error && <div style={{ color: "red" }}>{error}</div>}
-      </form>
+    <div className="login-container" style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(120deg,#181825 60%,#a259ff 100%)',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      <div style={{
+        background: 'rgba(30,30,50,0.95)',
+        borderRadius: '24px',
+        boxShadow: '0 8px 40px #a259ff33',
+        padding: '48px 36px',
+        minWidth: 340,
+        maxWidth: 380,
+        width: '100%',
+        position: 'relative',
+        zIndex: 2,
+        border: '1.5px solid #a259ff44',
+        backdropFilter: 'blur(8px)'
+      }}>
+        <h2 style={{
+          background: 'linear-gradient(90deg,#a259ff,#ff6bcb)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          fontWeight: 800,
+          fontSize: '2rem',
+          marginBottom: 32,
+          textAlign: 'center',
+          letterSpacing: '-1px',
+        }}>Login</h2>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              border: 'none',
+              background: '#23233a',
+              color: '#fff',
+              fontSize: '1rem',
+              marginBottom: 8,
+              outline: 'none',
+              boxShadow: '0 2px 8px #a259ff11',
+            }}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              border: 'none',
+              background: '#23233a',
+              color: '#fff',
+              fontSize: '1rem',
+              marginBottom: 8,
+              outline: 'none',
+              boxShadow: '0 2px 8px #a259ff11',
+            }}
+          />
+          <button type="submit" style={{
+            background: 'linear-gradient(90deg,#a259ff,#ff6bcb)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '999px',
+            padding: '14px 0',
+            fontWeight: 700,
+            fontSize: '1.1rem',
+            marginTop: 8,
+            boxShadow: '0 2px 16px #a259ff33',
+            cursor: 'pointer',
+            transition: 'background 0.2s',
+            outline: 'none',
+          }}>Login</button>
+          {error && <div style={{ color: '#ff6bcb', marginTop: 8, textAlign: 'center', fontWeight: 500 }}>{error}</div>}
+        </form>
+      </div>
+      {/* Glow background */}
+      <div style={{
+        position: 'absolute',
+        left: '-120px',
+        top: '-120px',
+        width: '340px',
+        height: '340px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle,#a259ff55 0%,transparent 70%)',
+        zIndex: 1,
+        filter: 'blur(16px)'
+      }} />
+      <div style={{
+        position: 'absolute',
+        right: '-120px',
+        bottom: '-120px',
+        width: '340px',
+        height: '340px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle,#ff6bcb55 0%,transparent 70%)',
+        zIndex: 1,
+        filter: 'blur(16px)'
+      }} />
     </div>
   );
 };
