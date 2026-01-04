@@ -18,7 +18,7 @@ export async function apiFetch(endpoint, options = {}) {
 
 // Fetch all transactions for a consentId (pagination handled on frontend)
 export async function fetchTransactionsByConsentId(consentId) {
-  const SERVER_PORT = import.meta.env.VITE_SERVER_PORT || 8092;
+  const SERVER_PORT = import.meta.env.VITE_SERVER_PORT || 8085;
   const url = `http://localhost:${SERVER_PORT}/api/setu/transaction/byConsentID?consentId=${consentId}`;
   try {
     const response = await fetch(url);
