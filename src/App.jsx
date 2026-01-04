@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Stats from "./components/Stats";
@@ -16,7 +16,32 @@ import Signup from "./components/Signup";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [isAuthenticated, setAuthenticated] = useState(() => {
+    return localStorage.getItem("isAuthenticated") === "true";
+  });
+
+  const LandingPage = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (isAuthenticated && params.get("success") === "true") {
+      return <Navigate to={`/dashboard${window.location.search}`} replace />;
+    }
+    
+    return (
+      <>
+        <Navbar />
+        <main className="relative z-10">
+          <Hero />
+          <Stats />
+          <Features />
+          <HowItWorks />
+          <ChatDemo />
+          <Security />
+          <CTA />
+        </main>
+        <Footer />
+      </>
+    );
+  };
 
   return (
     <Router>
@@ -37,21 +62,7 @@ function App() {
           <Route path="/signup" element={<Signup setAuthenticated={setAuthenticated} />} />
           <Route
             path="/"
-            element={
-              <>
-                <Navbar />
-                <main className="relative z-10">
-                  <Hero />
-                  <Stats />
-                  <Features />
-                  <HowItWorks />
-                  <ChatDemo />
-                  <Security />
-                  <CTA />
-                </main>
-                <Footer />
-              </>
-            }
+            element={<LandingPage />}
           />
         </Routes>
       </div>
