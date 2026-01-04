@@ -2,6 +2,22 @@ import React, { useMemo, useState } from "react";
 import { useTransactionsByConsentId } from "../hooks/useTransactionsByConsentId";
 import ConsentManager from "./ConsentManager";
 import { SetuProvider } from "../contexts/SetuContext";
+import { 
+  LayoutDashboard, 
+  BarChart2, 
+  PiggyBank, 
+  Briefcase, 
+  MessageSquare, 
+  ArrowRightLeft, 
+  FileCheck, 
+  Settings, 
+  Palette, 
+  HelpCircle, 
+  LogOut,
+  Zap,
+  Sun,
+  Moon
+} from "lucide-react";
 import "../index.css";
 import "../styles/Transactions.css";
 
@@ -242,37 +258,52 @@ const Dashboard = () => {
     </div>
   );
 
+  const sectionInfo = {
+    Dashboard: { title: "Dashboard", subtitle: "Overview of your financial activity" },
+    Statistics: { title: "Statistics", subtitle: "Analyze your spending habits" },
+    Savings: { title: "Savings", subtitle: "Track your savings goals" },
+    Portfolio: { title: "Portfolio", subtitle: "Manage your investments" },
+    Messages: { title: "Messages", subtitle: "Recent communications" },
+    Transactions: { title: "Transactions", subtitle: "Review your transaction history" },
+    Consent: { title: "Consent Management", subtitle: "Manage your financial data consents securely" },
+    Settings: { title: "Settings", subtitle: "Account configuration" },
+    Appearances: { title: "Appearances", subtitle: "Customize your view" },
+    Help: { title: "Help", subtitle: "Support and documentation" },
+  };
+
+  const currentInfo = sectionInfo[activeSection] || { title: activeSection, subtitle: "" };
+
   return (
     <div className={`dashboard-root ${theme === "light" ? "theme-light" : ""}`}>
       <aside className="sidebar">
         <div className="logo">
-          <div className="logo-icon-box">⚡</div>
-          <span className="logo-text">FINPEAK</span>
+          <div className="logo-icon-box"><Zap size={20} fill="currentColor" /></div>
+          <span className="logo-text">FinPilot</span>
         </div>
         
         <div className="nav-section-label">MENU</div>
         <nav>
           <ul>
             <li className={activeSection === "Dashboard" ? "active" : ""} onClick={() => setActiveSection("Dashboard")}>
-              <span className="icon">::</span> Dashboard
+              <span className="icon"><LayoutDashboard size={20} /></span> Dashboard
             </li>
             <li className={activeSection === "Statistics" ? "active" : ""} onClick={() => setActiveSection("Statistics")}>
-              <span className="icon">📊</span> Statistics
+              <span className="icon"><BarChart2 size={20} /></span> Statistics
             </li>
             <li className={activeSection === "Savings" ? "active" : ""} onClick={() => setActiveSection("Savings")}>
-              <span className="icon">💾</span> Savings
+              <span className="icon"><PiggyBank size={20} /></span> Savings
             </li>
             <li className={activeSection === "Portfolio" ? "active" : ""} onClick={() => setActiveSection("Portfolio")}>
-              <span className="icon">💼</span> Portfolio
+              <span className="icon"><Briefcase size={20} /></span> Portfolio
             </li>
             <li className={activeSection === "Messages" ? "active" : ""} onClick={() => setActiveSection("Messages")}>
-              <span className="icon">✉️</span> Messages <span className="badge">4</span>
+              <span className="icon"><MessageSquare size={20} /></span> Messages <span className="badge">4</span>
             </li>
             <li className={activeSection === "Transactions" ? "active" : ""} onClick={() => setActiveSection("Transactions")}>
-              <span className="icon">💸</span> Transactions
+              <span className="icon"><ArrowRightLeft size={20} /></span> Transactions
             </li>
             <li className={activeSection === "Consent" ? "active" : ""} onClick={() => setActiveSection("Consent")}>
-              <span className="icon">📝</span> Consent
+              <span className="icon"><FileCheck size={20} /></span> Consent
             </li>
           </ul>
         </nav>
@@ -281,20 +312,20 @@ const Dashboard = () => {
         <nav>
           <ul>
             <li className={activeSection === "Settings" ? "active" : ""} onClick={() => setActiveSection("Settings")}>
-              <span className="icon">⚙️</span> Settings
+              <span className="icon"><Settings size={20} /></span> Settings
             </li>
             <li className={activeSection === "Appearances" ? "active" : ""} onClick={() => setActiveSection("Appearances")}>
-              <span className="icon">🎨</span> Appearances
+              <span className="icon"><Palette size={20} /></span> Appearances
             </li>
             <li className={activeSection === "Help" ? "active" : ""} onClick={() => setActiveSection("Help")}>
-              <span className="icon">❓</span> Help
+              <span className="icon"><HelpCircle size={20} /></span> Help
             </li>
           </ul>
         </nav>
 
         <div className="sidebar-footer">
           <button className="logout-link" onClick={() => alert('Logged out!')}>
-            <span className="icon">🚪</span> Log Out
+            <span className="icon"><LogOut size={20} /></span> Log Out
           </button>
         </div>
       </aside>
@@ -302,18 +333,16 @@ const Dashboard = () => {
       <main className="dashboard-main">
         <header className="dashboard-header">
           <div className="header-left">
-            <h2>Good Morning, Ralph Edwards 👋</h2>
-            <p>Here's What Happened In Your Wally Account Today</p>
+            <h2>{currentInfo.title}</h2>
+            <p>{currentInfo.subtitle}</p>
           </div>
           <div className="header-right">
-            <button className="icon-btn">🔍</button>
-            <button className="icon-btn">🔔</button>
             <button
               type="button"
               className="theme-toggle"
               onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
             >
-              {theme === "light" ? "🌙" : "☀️"}
+              {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
             </button>
             <div className="user-profile">
               <div className="avatar"></div>
@@ -330,11 +359,7 @@ const Dashboard = () => {
           {activeSection === "Transactions" ? (
             <div className="transactions-panel">
                {/* Existing Transactions Logic */}
-               <div className="transactions-header">
-                <div className="transactions-title-wrap">
-                  <span className="transactions-title">Transactions by Consent ID</span>
-                  <span className="transactions-subtitle">Consent-scoped feed with inline insights</span>
-                </div>
+               <div className="transactions-header" style={{ justifyContent: 'flex-end', marginBottom: '20px' }}>
                 <div className="header-actions">
                   {lastUpdated && (
                     <span className="last-updated">Updated {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
