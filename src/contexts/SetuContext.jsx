@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { setuService } from '../services/setuService';
 
 const SetuContext = createContext(null);
@@ -23,7 +23,7 @@ export const SetuProvider = ({ children }) => {
     }
   }, []);
 
-  const login = async () => {
+  const login = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -45,9 +45,9 @@ export const SetuProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createConsent = async (consentDetails) => {
+  const createConsent = useCallback(async (consentDetails) => {
     if (!token) {
       setError("Authentication required");
       throw new Error("Authentication required");
@@ -64,31 +64,21 @@ export const SetuProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  const getConsentStatus = async (consentId) => {
-    if (!token) {
-      // If token is not in state, check localStorage one last time (edge case on reload)
-      const storedToken = localStorage.getItem('access_token');
-      if (!storedToken) {
-        setError("Authentication required");
-        throw new Error("Authentication required");
-      }
-      // Use stored token if state is not yet updated
-      try {
-        const result = await setuService.getConsentStatus(storedToken, consentId);
-        return result;
-      } catch (err) {
-        console.error(err);
-        setError('Failed to fetch consent status.');
-        throw err;
-      }
+  const getConsentStatus = useCallback(async (consentId) => {
+    // If token is not in state, check localStorage one last time (edge case on reload)
+    const currentToken = token || localStorage.getItem('access_token');
+    
+    if (!currentToken) {
+      setError("Authentication required");
+      throw new Error("Authentication required");
     }
     
     setLoading(true);
     setError(null);
     try {
-      const result = await setuService.getConsentStatus(token, consentId);
+      const result = await setuService.getConsentStatus(currentToken, consentId);
       return result;
     } catch (err) {
       console.error(err);
@@ -97,22 +87,25 @@ export const SetuProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setToken(null);
     localStorage.removeItem('access_token');
-  };
+  }, []);
 
-  const value = {
+  const clearError = useCallback(() => setError(null), []);
+
+  const value = useMemo(() => ({
     token,
     loading,
     error,
     login,
     logout,
     createConsent,
-    getConsentStatus
-  };
+    getConsentStatus,
+    clearError
+  }), [token, loading, error, login, logout, createConsent, getConsentStatus, clearError]);
 
   return (
     <SetuContext.Provider value={value}>
