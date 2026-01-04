@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSetu } from '../contexts/SetuContext';
 import Toast from './Toast';
+import ConfirmationModal from './ConfirmationModal';
 import { LogOut, Undo2 } from 'lucide-react';
 import '../styles/ConsentManager.css';
 
@@ -16,6 +17,8 @@ const ConsentManager = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedConsent, setSelectedConsent] = useState(null);
   const [localError, setLocalError] = useState('');
+  const [revokeModal, setRevokeModal] = useState({ show: false, consentId: null });
+  const [isRevoking, setIsRevoking] = useState(false);
   
   // Persist consents to localStorage whenever they change
   useEffect(() => {
@@ -151,10 +154,16 @@ const ConsentManager = () => {
     }
   };
 
-  const handleRevoke = async (e, consentId) => {
+  const handleRevoke = (e, consentId) => {
     e.stopPropagation();
-    if (!window.confirm("Are you sure you want to revoke this consent?")) return;
+    setRevokeModal({ show: true, consentId });
+  };
 
+  const confirmRevoke = async () => {
+    const consentId = revokeModal.consentId;
+    if (!consentId) return;
+
+    setIsRevoking(true);
     try {
       const response = await fetch(`http://localhost:8072/api/setu/auth/${consentId}/revokeConsent`, {
         method: 'POST'
@@ -165,12 +174,16 @@ const ConsentManager = () => {
         if (selectedConsent && selectedConsent.id === consentId) {
           setSelectedConsent(prev => ({ ...prev, status: 'REVOKED' }));
         }
+        setRevokeModal({ show: false, consentId: null });
       } else {
         throw new Error('Failed to revoke');
       }
     } catch (err) {
       console.error("Revoke error:", err);
       setLocalError('Failed to revoke consent');
+      setRevokeModal({ show: false, consentId: null });
+    } finally {
+      setIsRevoking(false);
     }
   };
 
@@ -465,6 +478,15 @@ const ConsentManager = () => {
           setLocalError('');
           clearError();
         }} 
+      />
+
+      <ConfirmationModal
+        isOpen={revokeModal.show}
+        onClose={() => setRevokeModal({ show: false, consentId: null })}
+        onConfirm={confirmRevoke}
+        title="Revoke Consent"
+        message="Are you sure you want to revoke this consent? This action cannot be undone."
+        isLoading={isRevoking}
       />
     </div>
   );
