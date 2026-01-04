@@ -19,6 +19,7 @@ const ConsentManager = () => {
   const [localError, setLocalError] = useState('');
   const [revokeModal, setRevokeModal] = useState({ show: false, consentId: null });
   const [isRevoking, setIsRevoking] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Persist consents to localStorage whenever they change
   useEffect(() => {
@@ -111,10 +112,16 @@ const ConsentManager = () => {
 
   const handleCreateConsent = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    if (isSubmitting || loading) return;
+    
+    setIsSubmitting(true);
     setLocalError('');
 
     if (!formData.mobileNumber) {
       setLocalError("Mobile number is required");
+      setIsSubmitting(false);
       return;
     }
 
@@ -151,6 +158,8 @@ const ConsentManager = () => {
       }
     } catch (err) {
       setLocalError('Failed to create consent.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -325,8 +334,8 @@ const ConsentManager = () => {
 
                 <div className="form-actions">
                   <button type="button" className="btn-secondary" onClick={() => setShowCreateForm(false)}>Cancel</button>
-                  <button type="submit" className="btn-primary" disabled={loading}>
-                    {loading ? 'Creating...' : 'Create Request'}
+                  <button type="submit" className="btn-primary" disabled={loading || isSubmitting}>
+                    {loading || isSubmitting ? 'Creating...' : 'Create Request'}
                   </button>
                 </div>
               </form>

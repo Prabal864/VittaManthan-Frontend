@@ -1,7 +1,8 @@
 .toast {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   padding: 16px 24px;
   border-radius: 12px;
   background: var(--bg-card);
@@ -15,7 +16,7 @@
   min-width: 300px;
   max-width: 450px;
   backdrop-filter: blur(12px);
-  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .toast-error {
@@ -61,13 +62,13 @@
   color: var(--text-primary);
 }
 
-@keyframes slideIn {
+@keyframes slideDown {
   from {
-    transform: translateX(100%);
+    transform: translate(-50%, -100%);
     opacity: 0;
   }
   to {
-    transform: translateX(0);
+    transform: translate(-50%, 0);
     opacity: 1;
   }
 }
