@@ -16,6 +16,7 @@ const Login = ({ setAuthenticated }) => {
         body: JSON.stringify({ username, password }),
       });
       if (res.ok) {
+        localStorage.setItem("isAuthenticated", "true");
         setAuthenticated(true);
         navigate("/dashboard");
       } else {

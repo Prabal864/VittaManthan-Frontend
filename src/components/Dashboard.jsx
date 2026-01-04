@@ -1,10 +1,18 @@
 import React, { useMemo, useState } from "react";
 import { useTransactionsByConsentId } from "../hooks/useTransactionsByConsentId";
+import ConsentManager from "./ConsentManager";
+import { SetuProvider } from "../contexts/SetuContext";
 import "../index.css";
 import "../styles/Transactions.css";
 
 const Dashboard = () => {
-  const [activeSection, setActiveSection] = useState("Dashboard");
+  const [activeSection, setActiveSection] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "true" && params.get("id")) {
+      return "Consent";
+    }
+    return "Dashboard";
+  });
   const [theme, setTheme] = useState("dark");
   const [consentId, setConsentId] = useState("");
   const [page, setPage] = useState(1);
@@ -263,6 +271,9 @@ const Dashboard = () => {
             <li className={activeSection === "Transactions" ? "active" : ""} onClick={() => setActiveSection("Transactions")}>
               <span className="icon">💸</span> Transactions
             </li>
+            <li className={activeSection === "Consent" ? "active" : ""} onClick={() => setActiveSection("Consent")}>
+              <span className="icon">📝</span> Consent
+            </li>
           </ul>
         </nav>
 
@@ -453,6 +464,10 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
+          ) : activeSection === "Consent" ? (
+            <SetuProvider>
+              <ConsentManager />
+            </SetuProvider>
           ) : (
             renderDashboardHome()
           )}
