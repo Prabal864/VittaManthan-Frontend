@@ -685,17 +685,17 @@ const Hero = () => {
       {/* Moving Beams Background */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Beam 1 - Purple */}
-        <div className="absolute top-[15%] -left-[20%] w-[60%] h-1.5 bg-linear-to-r from-transparent via-purple-500 to-transparent opacity-70 blur-sm animate-beam-horizontal" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
-        <div className="absolute top-[15%] -left-[20%] w-[30%] h-1 bg-linear-to-r from-transparent via-white to-transparent opacity-90 blur-md animate-beam-horizontal" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
+        <div className="absolute top-[15%] -left-[20%] w-[60%] h-1.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-70 blur-sm animate-beam-horizontal" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
+        <div className="absolute top-[15%] -left-[20%] w-[30%] h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-90 blur-md animate-beam-horizontal" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
 
         {/* Beam 2 - Cyan */}
-        <div className="absolute top-[45%] -left-[20%] w-[70%] h-1 bg-linear-to-r from-transparent via-cyan-500 to-transparent opacity-60 blur-sm animate-beam-horizontal" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
+        <div className="absolute top-[45%] -left-[20%] w-[70%] h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 blur-sm animate-beam-horizontal" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
         
         {/* Beam 3 - Mixed */}
-        <div className="absolute top-[75%] -left-[20%] w-[60%] h-1 bg-linear-to-r from-transparent via-purple-400 to-transparent opacity-60 blur-sm animate-beam-horizontal" style={{ animationDuration: '15s', animationDelay: '5s' }}></div>
+        <div className="absolute top-[75%] -left-[20%] w-[60%] h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 blur-sm animate-beam-horizontal" style={{ animationDuration: '15s', animationDelay: '5s' }}></div>
         
         {/* Beam 4 - Fast small one */}
-        <div className="absolute top-[30%] -left-[10%] w-[20%] h-0.5 bg-linear-to-r from-transparent via-white to-transparent opacity-80 blur-[1px] animate-beam-horizontal" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
+        <div className="absolute top-[30%] -left-[10%] w-[20%] h-0.5 bg-gradient-to-r from-transparent via-white to-transparent opacity-80 blur-[1px] animate-beam-horizontal" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
       </div>
 
       <div className="max-w-7xl mx-auto text-center relative z-10">

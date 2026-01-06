@@ -5,7 +5,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <span className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-cyan-400 bg-clip-text text-transparent">
-              LiveReconAI
+              VittaManthan
             </span>
           </div>
           <div className="hidden md:block">

@@ -2,7 +2,7 @@
 .active-consents-carousel {
   width: 100%;
   margin-bottom: 0.5rem;
-  margin-top: 10px; /* Reset to positive margin */
+  margin-top: 20px; /* Added spacing from top */
   padding: 10px; /* Add padding for shadows */
 }
 
@@ -45,112 +45,152 @@
 }
 
 .carousel-card {
-  min-width: 240px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 1.25rem;
+  min-width: 320px;
+  height: 200px;
+  border-radius: 20px;
+  padding: 24px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  justify-content: space-between;
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
 }
 
-.carousel-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  transform: skewX(-25deg);
-  transition: 0s;
-  pointer-events: none;
-  z-index: 1;
+/* Gradient Variants */
+.card-gradient-0 {
+  background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #8b5cf6 100%);
+}
+.card-gradient-1 {
+  background: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 50%, #06b6d4 100%);
+}
+.card-gradient-2 {
+  background: linear-gradient(135deg, #f97316 0%, #f43f5e 50%, #d946ef 100%);
+}
+.card-gradient-3 {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+}
+.card-gradient-4 {
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #6366f1 100%);
 }
 
-.carousel-card:hover::before {
-  left: 200%;
-  transition: 0.8s ease-in-out;
+.carousel-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3);
 }
 
-.carousel-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 16px;
-  padding: 1.5px;
-  background: linear-gradient(to right, #c084fc, #ec4899, #22d3ee);
-  background-size: 200% 100%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-
-.carousel-card:hover::after,
-.carousel-card.selected::after {
-  opacity: 1;
-  animation: borderLight 2s linear infinite;
-}
-
-.carousel-card:hover,
-.carousel-card.selected {
-  border-color: transparent;
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(192, 132, 252, 0.3), 0 0 40px rgba(236, 72, 153, 0.2);
-  background: linear-gradient(145deg, rgba(192, 132, 252, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);
-}
-
-.carousel-card-header {
+.card-top {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  /* margin-bottom removed as parent has gap */
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.card-chip {
+  width: 50px;
+  height: 36px;
+  background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.status-dot.active {
-  background: var(--success-green);
-  box-shadow: 0 0 6px var(--success-green);
+/* Simulate chip circuits */
+.card-chip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.15);
+}
+.card-chip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.15);
 }
 
-.carousel-id {
+.contactless-icon {
+  opacity: 0.8;
+}
+
+.card-middle {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 12px 0;
+}
+
+.card-number {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+  font-size: 1.25rem;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.carousel-card-body {
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.card-info-group {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 4px;
+  min-width: 0; /* Enable truncation in flex item */
 }
 
-.carousel-vua {
-  font-weight: 600;
+.card-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  opacity: 0.8;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.card-value {
   font-size: 0.95rem;
-  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.carousel-date {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+.theme-light .carousel-card {
+  /* No specific light theme overrides for the card itself as it's a colored card, 
+     but we might want shadows to look right */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+}
+.theme-light .carousel-card:hover { 
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+}
+
+/* Remove old styles references that might conflict or be unused */
+.carousel-card.selected {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.carousel-card::after, 
+.carousel-card::before {
+  display: none;
 }

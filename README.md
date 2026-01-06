@@ -1,12 +1,12 @@
-# LiveReconAI Frontend
+# VittaManthan Frontend
 
-LiveReconAI is an intelligent **Finance Copilot** designed to transform how you understand and manage your money. By leveraging the **Account Aggregator (AA)** framework and advanced AI, it turns raw financial data into clear, actionable insights through a secure, natural language interface.
+VittaManthan is an intelligent **Finance Copilot** designed to transform how you understand and manage your money. By leveraging the **Account Aggregator (AA)** framework and advanced AI, it turns raw financial data into clear, actionable insights through a secure, natural language interface.
 
-![LiveReconAI Hero](docs/screenshots/hero-dashboard.png)
+![VittaManthan Hero](docs/screenshots/hero-dashboard.png)
 
 ## 🚀 Overview
 
-LiveReconAI bridges the gap between complex financial statements and personal financial clarity. Instead of digging through spreadsheets or bank apps, users can simply ask questions like *"Can I afford a vacation in December?"* or *"Analyze my spending trends for October"* and get instant, data-driven answers.
+VittaManthan bridges the gap between complex financial statements and personal financial clarity. Instead of digging through spreadsheets or bank apps, users can simply ask questions like *"Can I afford a vacation in December?"* or *"Analyze my spending trends for October"* and get instant, data-driven answers.
 
 ## ✨ Key Features
 

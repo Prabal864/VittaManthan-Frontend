@@ -79,9 +79,9 @@ const Security = () => {
 
       {/* Vertical Beams */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-px h-full bg-linear-to-b from-transparent via-purple-500/50 to-transparent animate-beam-vertical" style={{ animationDelay: '0s' }}></div>
-        <div className="absolute top-0 left-3/4 w-px h-full bg-linear-to-b from-transparent via-cyan-500/50 to-transparent animate-beam-vertical" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-0 left-1/2 w-px h-full bg-linear-to-b from-transparent via-purple-400/30 to-transparent animate-beam-vertical" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-purple-500/50 to-transparent animate-beam-vertical" style={{ animationDelay: '0s' }}></div>
+        <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent animate-beam-vertical" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-purple-400/30 to-transparent animate-beam-vertical" style={{ animationDelay: '4s' }}></div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
