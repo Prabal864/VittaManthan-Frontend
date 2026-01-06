@@ -755,3 +755,50 @@ body {
   color: var(--text-secondary);
 }
 
+/* Custom Animations */
+@keyframes beam-horizontal {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120vw);
+    opacity: 0;
+  }
+}
+
+.animate-beam-horizontal {
+  animation-name: beam-horizontal;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes beam-vertical {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh);
+    opacity: 0;
+  }
+}
+
+.animate-beam-vertical {
+  animation-name: beam-vertical;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+

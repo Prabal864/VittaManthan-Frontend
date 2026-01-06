@@ -7,14 +7,14 @@ const CTA = () => {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] opacity-20"></div>
         
         {/* Horizontal Beams - Bigger and Brighter */}
-        <div className="absolute top-[15%] -left-[10%] w-[120%] h-1 bg-linear-to-r from-transparent via-purple-500 to-transparent opacity-80 blur-[2px] animate-beam-horizontal shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ animationDuration: '7s' }}></div>
-        <div className="absolute top-[45%] -left-[10%] w-[120%] h-1.5 bg-linear-to-r from-transparent via-cyan-400 to-transparent opacity-90 blur-[3px] animate-beam-horizontal shadow-[0_0_15px_rgba(34,211,238,0.6)]" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
-        <div className="absolute top-[75%] -left-[10%] w-[120%] h-1 bg-linear-to-r from-transparent via-pink-500 to-transparent opacity-70 blur-[2px] animate-beam-horizontal shadow-[0_0_10px_rgba(236,72,153,0.5)]" style={{ animationDuration: '15s', animationDelay: '2s' }}></div>
+        <div className="absolute top-[15%] -left-[10%] w-[120%] h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80 blur-[2px] animate-beam-horizontal shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ animationDuration: '7s' }}></div>
+        <div className="absolute top-[45%] -left-[10%] w-[120%] h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-90 blur-[3px] animate-beam-horizontal shadow-[0_0_15px_rgba(34,211,238,0.6)]" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
+        <div className="absolute top-[75%] -left-[10%] w-[120%] h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-70 blur-[2px] animate-beam-horizontal shadow-[0_0_10px_rgba(236,72,153,0.5)]" style={{ animationDuration: '15s', animationDelay: '2s' }}></div>
 
         {/* Vertical Beams - Bigger and Brighter */}
-        <div className="absolute -top-[10%] left-[15%] w-1 h-[120%] bg-linear-to-b from-transparent via-purple-400 to-transparent opacity-60 blur-[1px] animate-beam-vertical" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
-        <div className="absolute -top-[10%] left-[85%] w-1.5 h-[120%] bg-linear-to-b from-transparent via-cyan-400 to-transparent opacity-70 blur-[2px] animate-beam-vertical" style={{ animationDuration: '12s', animationDelay: '3s' }}></div>
-        <div className="absolute -top-[10%] left-[50%] w-0.5 h-[120%] bg-linear-to-b from-transparent via-indigo-500 to-transparent opacity-50 blur-[1px] animate-beam-vertical" style={{ animationDuration: '10s', animationDelay: '5s' }}></div>
+        <div className="absolute -top-[10%] left-[15%] w-1 h-[120%] bg-gradient-to-b from-transparent via-purple-400 to-transparent opacity-60 blur-[1px] animate-beam-vertical" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
+        <div className="absolute -top-[10%] left-[85%] w-1.5 h-[120%] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-70 blur-[2px] animate-beam-vertical" style={{ animationDuration: '12s', animationDelay: '3s' }}></div>
+        <div className="absolute -top-[10%] left-[50%] w-0.5 h-[120%] bg-gradient-to-b from-transparent via-indigo-500 to-transparent opacity-50 blur-[1px] animate-beam-vertical" style={{ animationDuration: '10s', animationDelay: '5s' }}></div>
         
         {/* Ambient Glows - Enhanced */}
         <div className="absolute left-0 top-0 -z-10 h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[120px]"></div>
@@ -48,7 +48,7 @@ const CTA = () => {
                 </h2>
                 
                 <p className="text-gray-400 text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed">
-                  Join thousands of users who are already making smarter financial decisions with LiveReconAI. No credit card required.
+                  Join thousands of users who are already making smarter financial decisions with VittaManthan. No credit card required.
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
