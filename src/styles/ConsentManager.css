@@ -889,34 +889,41 @@
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
-/* Revoke Icon */
-.card-revoke-icon {
-  background: rgba(255,255,255,0.1);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.card-revoke-icon:hover {
-  background: rgba(239, 68, 68, 0.4);
-}
-
-/* Logo Circles (Mastercard style) */
+/* Logo Circles (Modern Overlapping Style) */
 .card-logo-circles {
   display: flex;
   position: relative;
+  align-items: center;
 }
 .circle {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  opacity: 0.9;
+  opacity: 0.85;
+}
+.circle.red {
+  background: #eb001b;
+  z-index: 1;
+}
+.circle.yellow {
+  background: #f79e1b;
+  margin-left: -12px; /* Overlap */
+  z-index: 2;
+  mix-blend-mode: hard-light; /* Blending effect where they overlap */
+}
+
+/* Modern Glass Badge for Status */
+.status-badge-pill {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 .circle.red { background: #eb001b; }
 .circle.yellow { background: #f79e1b; margin-left: -12px; mix-blend-mode: hard-light; }
@@ -1451,3 +1458,36 @@
     position: relative;
     z-index: 1;
 }
+
+/* Enforce White Text on Premium Cards (Theme Override) */
+.consent-card-premium,
+.consent-card-premium .provider-logo,
+.consent-card-premium .card-number-large,
+.consent-card-premium .info-label,
+.consent-card-premium .info-value {
+    color: #ffffff !important;
+}
+
+/* Ensure SVG icons inside the card are also white/off-white */
+.consent-card-premium svg {
+    color: #ffffff !important;
+}
+
+/* Restore Revoke Icon */
+.card-revoke-icon {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.card-revoke-icon:hover {
+  background: rgba(239, 68, 68, 0.4);
+}
+
