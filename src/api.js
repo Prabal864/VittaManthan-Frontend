@@ -2,13 +2,21 @@ export const API_BASE_URL = 'http://localhost:8086/api';
 
 export async function apiFetch(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  };
+
+  const accessToken = localStorage.getItem("accessToken");
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
   const response = await fetch(url, {
     ...options,
     credentials: 'include', // if you need cookies
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-    },
+    headers,
   });
   if (!response.ok) {
     throw new Error(`API error: ${response.status}`);
@@ -21,7 +29,13 @@ export async function fetchTransactionsByConsentId(consentId) {
   const SERVER_PORT = import.meta.env.VITE_SERVER_PORT || 8085;
   const url = `http://localhost:${SERVER_PORT}/api/setu/transaction/byConsentID?consentId=${consentId}`;
   try {
-    const response = await fetch(url);
+    const headers = {};
+    const accessToken = localStorage.getItem("accessToken");
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
+    const response = await fetch(url, { headers });
     if (!response.ok) {
       throw new Error('Failed to fetch transactions');
     }
