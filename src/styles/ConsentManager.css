@@ -719,163 +719,214 @@
 /* Consents List */
 .consents-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 2rem;
 }
 
-.consent-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 1.75rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+/* Premium Credit Card Design */
+.consent-card-premium {
+  /* Dimensions & Base */
+  width: 100%;
+  aspect-ratio: 1.586 / 1;
+  border-radius: 20px;
   position: relative;
   overflow: hidden;
+  padding: 1.5rem;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
-.consent-card::before {
-  content: '';
+.consent-card-premium:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  z-index: 2;
+}
+
+/* Glass Shine */
+.card-shine {
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
+    115deg, 
+    transparent 0%, 
+    rgba(255,255,255,0.05) 30%, 
+    rgba(255,255,255,0.2) 45%, 
+    rgba(255,255,255,0.05) 60%, 
+    transparent 100%
   );
-  transform: skewX(-25deg);
-  transition: 0s;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.consent-card:hover::before {
-  left: 200%;
-  transition: 0.8s ease-in-out;
-}
-
-.consent-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 16px;
-  padding: 1.5px;
-  background: linear-gradient(to right, #c084fc, #ec4899, #22d3ee);
-  background-size: 200% 100%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  transform: translateX(-150%);
+  transition: transform 0.6s ease;
   pointer-events: none;
 }
 
-.consent-card:hover::after {
-  opacity: 1;
-  animation: borderLight 2s linear infinite;
+.consent-card-premium:hover .card-shine {
+  transform: translateX(150%);
+  transition: transform 1.2s ease-in-out;
 }
 
-.consent-card:hover {
-  border-color: transparent;
-  transform: translateY(-5px);
-  box-shadow: 0 0 20px rgba(192, 132, 252, 0.3), 0 0 40px rgba(236, 72, 153, 0.2);
-  background: linear-gradient(145deg, rgba(192, 132, 252, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);
+/* Top Row */
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.card-top {
+.provider-logo {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.status-badge-pill {
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  padding: 4px 10px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
-.status-dot {
-  width: 8px;
-  height: 8px;
+.status-dot-pulse {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+.status-dot-pulse.active { background-color: #4ade80; color: #4ade80; }
+.status-dot-pulse.pending { background-color: #fbbf24; color: #fbbf24; }
+.status-dot-pulse.revoked { background-color: #ef4444; color: #ef4444; }
+
+.status-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
-.status-dot.active { background: var(--success-green); box-shadow: 0 0 6px var(--success-green); }
-.status-dot.pending { background: #f59e0b; }
-.status-dot.rejected { background: var(--danger-red); }
-.status-dot.revoked { background: var(--danger-red); }
+/* Chip Row */
+.card-chip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
 
-.revoke-btn {
-  margin-left: auto;
-  background: var(--hover-bg);
-  border: 1px solid var(--border-color);
-  cursor: pointer;
-  color: var(--text-secondary);
-  padding: 6px;
+.sim-chip {
+  width: 45px;
+  height: 34px;
+  background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
   border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #6b7280;
+}
+
+.chip-line {
+  position: absolute;
+  background: rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+/* Simple chip lines pattern */
+.chip-line:nth-child(1) { top: 10px; left: 0; right: 0; height: 1px; }
+.chip-line:nth-child(2) { top: 22px; left: 0; right: 0; height: 1px; }
+.chip-line:nth-child(3) { top: 0; bottom: 0; left: 14px; width: 1px; }
+.chip-line:nth-child(4) { top: 0; bottom: 0; right: 14px; width: 1px; }
+
+.contactless-symbol {
+  opacity: 0.7;
+}
+
+/* Middle: Number */
+.card-number-large {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  text-shadow: 0 2px 2px rgba(0,0,0,0.4);
+  margin: 1.5rem 0;
+  opacity: 0.95;
+}
+
+/* Bottom */
+.card-bottom-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.card-info-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 0.55rem;
+  font-weight: 700;
+  opacity: 0.7;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.info-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Revoke Icon */
+.card-revoke-icon {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.card-revoke-icon:hover {
+  background: rgba(239, 68, 68, 0.4);
 }
 
-.revoke-btn:hover {
-  background: var(--border-color);
-  color: var(--text-primary);
-  transform: scale(1.05);
-}
-
-.status-text {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.card-mid {
+/* Logo Circles (Mastercard style) */
+.card-logo-circles {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: relative;
 }
-
-.vua-text {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--text-primary);
+.circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  opacity: 0.9;
 }
+.circle.red { background: #eb001b; }
+.circle.yellow { background: #f79e1b; margin-left: -12px; mix-blend-mode: hard-light; }
 
-.date-text {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.card-bot {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
-  margin-top: auto;
-}
-
-.id-text {
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.arrow {
-  color: var(--primary-blue);
-  font-weight: bold;
-  opacity: 0;
-  transform: translateX(-10px);
-  transition: all 0.2s;
-}
-
-.consent-card:hover .arrow {
-  opacity: 1;
-  transform: translateX(0);
+/* REPLACED OR REMOVED OLD STYLES BELOW */
+/*.consent-card {
+  ...
+}*/
+.card-top {
+  display: none; 
 }
 
 /* Empty State */

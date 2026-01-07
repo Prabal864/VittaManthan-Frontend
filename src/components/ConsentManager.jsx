@@ -69,6 +69,20 @@ const ConsentManager = () => {
     const s = seconds % 60;
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
+
+  const getRandomGradient = (id) => {
+      const gradients = [
+          'linear-gradient(135deg, #1a1c2c 0%, #4a192c 100%)', // Dark Red/Purple
+          'linear-gradient(135deg, #0f172a 0%, #334155 100%)', // Slate
+          'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)', // Indigo deeply
+          'linear-gradient(135deg, #1c1917 0%, #57534e 100%)', // Stone
+          'linear-gradient(135deg, #14532d 0%, #064e3b 100%)', // Deep Green
+          'linear-gradient(135deg, #3b0764 0%, #6b21a8 100%)', // Deep Purple
+      ];
+      // Use ID char code sum to deterministically pick a gradient
+      const sum = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      return gradients[sum % gradients.length];
+  };
   
   // Persist consents to localStorage whenever they change
   useEffect(() => {
@@ -498,27 +512,74 @@ const ConsentManager = () => {
               ) : (
                 <div className="consents-grid">
                   {consents.map((consent, idx) => (
-                    <div key={idx} className="consent-card" onClick={() => setSelectedConsent(consent)}>
-                      <div className="card-top">
-                        <span className={`status-dot ${consent.status?.toLowerCase()}`}></span>
-                        <span className="status-text">{consent.status || 'PENDING'}</span>
-                        {consent.status !== 'REVOKED' && (
-                          <button 
-                            className="revoke-btn" 
-                            onClick={(e) => handleRevoke(e, consent.id)}
-                            title="Revoke Consent"
-                          >
-                            <Undo2 size={14} />
-                          </button>
-                        )}
+                    <div 
+                        key={idx} 
+                        className="consent-card-premium" 
+                        onClick={() => setSelectedConsent(consent)}
+                        style={{ background: getRandomGradient(consent.id) }}
+                    >
+                      {/* Glass Shine Effect */}
+                      <div className="card-shine"></div>
+                      
+                      {/* Top Row: Provider & Status */}
+                      <div className="card-top-row">
+                          <span className="provider-logo">SETU<span className="font-light">CONSENT</span></span>
+                          <div className="status-badge-pill">
+                              <span className={`status-dot-pulse ${consent.status?.toLowerCase()}`}></span>
+                              <span className="status-label">{consent.status}</span>
+                          </div>
                       </div>
-                      <div className="card-mid">
-                        <span className="vua-text">{consent.vua ? consent.vua.split('@')[0] : ''}</span>
-                        <span className="date-text">{new Date(consent.createdAt).toLocaleDateString()}</span>
+
+                      {/* Chip Row */}
+                      <div className="card-chip-row">
+                          <div className="sim-chip">
+                              <div className="chip-line"></div>
+                              <div className="chip-line"></div>
+                              <div className="chip-line"></div>
+                              <div className="chip-line"></div>
+                          </div>
+                          <div className="contactless-symbol">
+                              <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                                  <path d="M12 10.9c-.6.6-1.5.6-2.1 0-.6-.6-.6-1.5 0-2.1.6-.6 1.5-.6 2.1 0 .6.6.6 1.5 0 2.1z" fill="rgba(255,255,255,0.8)" />
+                                  <path d="M14.8 13.7c1.4-1.4 1.4-3.7 0-5.1-.4-.4-.4-1 0-1.4.4-.4 1-.4 1.4 0 2.2 2.2 2.2 5.7 0 7.9-.4.4-1 .4-1.4 0-.4-.4-.4-1 0-1.4z" fill="rgba(255,255,255,0.6)" />
+                                  <path d="M17.6 16.5c2.9-2.9 2.9-7.7 0-10.6-.4-.4-.4-1 0-1.4.4-.4 1-.4 1.4 0 3.7 3.7 3.7 9.6 0 13.4-.4.4-1 .4-1.4 0-.4-.4-.4-1 0-1.4z" fill="rgba(255,255,255,0.4)" />
+                              </svg>
+                          </div>
                       </div>
-                      <div className="card-bot">
-                        <span className="id-text">ID: {consent.id.slice(0, 8)}...</span>
-                        <span className="arrow">→</span>
+
+                      {/* Card Number (Consent ID) */}
+                      <div className="card-number-large">
+                          {consent.id ? (consent.id.slice(0,4) + '  ' + consent.id.slice(4,8) + '  ' + consent.id.slice(8,12) + '  ' + consent.id.slice(12,16)) : '0000  0000  0000  0000'}
+                      </div>
+
+                      {/* Bottom Details */}
+                      <div className="card-bottom-row">
+                          <div className="card-info-col">
+                              <span className="info-label">AUTHORIZED FOR</span>
+                              <span className="info-value truncate w-32" title={consent.vua}>{consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'USER'}</span>
+                          </div>
+                          <div className="card-info-col">
+                              <span className="info-label">VALID THRU</span>
+                              <span className="info-value">
+                                  {consent.dataRange?.to 
+                                    ? new Date(consent.dataRange.to).toLocaleDateString(undefined, { month: '2-digit', year: '2-digit' }) 
+                                    : '12/99'}
+                              </span>
+                          </div>
+                           {/* Revoke visual button (small) */}
+                          {consent.status !== 'REVOKED' && (
+                             <button 
+                                className="card-revoke-icon"
+                                onClick={(e) => handleRevoke(e, consent.id)}
+                                title="Revoke"
+                             >
+                                <LogOut size={16} />
+                             </button>
+                          )}
+                          <div className="card-logo-circles">
+                              <div className="circle red"></div>
+                              <div className="circle yellow"></div>
+                          </div>
                       </div>
                     </div>
                   ))}
