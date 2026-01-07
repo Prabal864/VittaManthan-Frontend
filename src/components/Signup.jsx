@@ -3,17 +3,28 @@ import { useNavigate } from "react-router-dom";
 
 const Signup = ({ setAuthenticated }) => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8086/api/auth/signup", {
+      const res = await fetch("http://localhost:8086/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ 
+          username, 
+          email, 
+          password, 
+          firstName, 
+          lastName, 
+          phoneNumber 
+        }),
       });
       if (res.ok) {
         setAuthenticated(true);
@@ -62,9 +73,77 @@ const Signup = ({ setAuthenticated }) => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
           <input
             type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              border: 'none',
+              background: '#23233a',
+              color: '#fff',
+              fontSize: '1rem',
+              marginBottom: 8,
+              outline: 'none',
+              boxShadow: '0 2px 8px #a259ff11',
+            }}
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              border: 'none',
+              background: '#23233a',
+              color: '#fff',
+              fontSize: '1rem',
+              marginBottom: 8,
+              outline: 'none',
+              boxShadow: '0 2px 8px #a259ff11',
+            }}
+          />
+          <input
+            type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              border: 'none',
+              background: '#23233a',
+              color: '#fff',
+              fontSize: '1rem',
+              marginBottom: 8,
+              outline: 'none',
+              boxShadow: '0 2px 8px #a259ff11',
+            }}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              border: 'none',
+              background: '#23233a',
+              color: '#fff',
+              fontSize: '1rem',
+              marginBottom: 8,
+              outline: 'none',
+              boxShadow: '0 2px 8px #a259ff11',
+            }}
+          />
+          <input
+            type="tel"
+            placeholder="Phone Number"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
             style={{
               padding: '14px',
               borderRadius: '12px',
