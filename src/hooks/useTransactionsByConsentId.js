@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { fetchTransactionsByConsentId } from "../api";
+import axios from 'axios';
 
 export function useTransactionsByConsentId() {
   const [allTransactions, setAllTransactions] = useState([]);
@@ -78,22 +79,14 @@ export function useTransactionsByConsentId() {
 
       // Step 1: Create/Get Data Session via Backend Proxy
       setLoadingMessage("Creating data session...");
-      const sessionRes = await fetch(`http://localhost:8072/api/setu/auth/${consentId}/consentDataSession`, {
-        method: 'GET',
+      const sessionRes = await axios.get(`http://localhost:8072/api/setu/auth/${consentId}/consentDataSession`, {
         headers: {
           'Content-Type': 'application/json',
-          // Backend might not need auth for this specific endpoint based on controller code, 
-          // but good practice to send if we have it.
           'Authorization': `Bearer ${token}` 
         }
       });
       
-      if (!sessionRes.ok) {
-        const errText = await sessionRes.text();
-        throw new Error(`Failed to create data session: ${sessionRes.status} ${errText}`);
-      }
-      
-      const sessionData = await sessionRes.json();
+      const sessionData = sessionRes.data;
       // The backend returns ConsentDataSessionResponseDTO which likely matches the Setu response structure
       const sessionId = sessionData.dataSessions?.[0]?.sessionId;
 
@@ -101,19 +94,13 @@ export function useTransactionsByConsentId() {
 
       // Step 2: Get FI Data via Backend Proxy
       setLoadingMessage("Fetching financial data...");
-      const fiDataRes = await fetch(`http://localhost:8072/api/setu/auth/${sessionId}/getFiData`, {
-        method: 'GET',
+      const fiDataRes = await axios.get(`http://localhost:8072/api/setu/auth/${sessionId}/getFiData`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}` // Required by backend controller
         }
       });
       
-      if (!fiDataRes.ok) {
-        const errText = await fiDataRes.text();
-        throw new Error(`Failed to fetch FI data: ${fiDataRes.status} ${errText}`);
-      }
-
       // Success!
       setNotification({ type: 'success', message: 'Transactions fetched and saved successfully!' });
       
