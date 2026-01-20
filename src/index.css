@@ -306,9 +306,13 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #cbd5e1;
-  background-image: url('https://i.pravatar.cc/150?img=11'); /* Placeholder */
-  background-size: cover;
+  background-color: #6366f1; /* Indigo-500 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .user-profile .user-info {
@@ -800,5 +804,142 @@ body {
   animation-name: beam-vertical;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+}
+
+
+/* Profile Dropdown */
+.profile-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 280px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  z-index: 1000;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+}
+
+.profile-dropdown-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 4px;
+}
+
+.dropdown-user-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+}
+
+.dropdown-user-email {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  display: block;
+  margin-top: 2px;
+}
+
+.profile-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 0.9rem;
+}
+
+.profile-dropdown-item:hover {
+  background: var(--hover-bg);
+}
+
+.profile-dropdown-item.danger {
+  color: var(--danger-red);
+}
+
+.profile-dropdown-item.danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Modal Form Styles */
+.edit-profile-form .form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-profile-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.edit-profile-form .form-row .form-group {
+  flex: 1;
+}
+
+.edit-profile-form label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: var(--hover-bg);
+}
+
+.btn-primary {
+    background: var(--primary-blue);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-blue-hover);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-root);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.user-profile {
+  position: relative;
 }
 

@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const API_BASE_URL = 'http://localhost:8086/api';
 
 export async function apiFetch(endpoint, options = {}) {
@@ -13,15 +15,27 @@ export async function apiFetch(endpoint, options = {}) {
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    credentials: 'include', // if you need cookies
+  // Handle body for axios (axios uses 'data', fetch uses 'body')
+  const { body, ...restOptions } = options;
+
+  const config = {
+    url,
+    method: options.method || 'GET',
     headers,
-  });
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+    ...restOptions,
+    data: body,
+    withCredentials: true, // axios equivalent of credentials: 'include'
+  };
+
+  try {
+    const response = await axios(config);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(`API error: ${error.response.status}`);
+    }
+    throw error;
   }
-  return response.json();
 }
 
 // Fetch all transactions for a consentId (pagination handled on frontend)
@@ -35,11 +49,8 @@ export async function fetchTransactionsByConsentId(consentId) {
       headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-      throw new Error('Failed to fetch transactions');
-    }
-    return await response.json();
+    const response = await axios.get(url, { headers });
+    return response.data;
   } catch (error) {
     console.error('Error fetching transactions:', error);
     throw error;
