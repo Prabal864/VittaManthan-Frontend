@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from 'axios';
 
 // Simple SVG Icons
 const UserIcon = () => (
@@ -40,31 +41,40 @@ const Login = ({ setAuthenticated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8086/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+      const res = await axios.post("http://localhost:8086/api/auth/login", { username, password }, {
+        headers: { "Content-Type": "application/json" }
       });
-      if (res.ok) {
-        // Assuming the API returns tokens similarly to register
-        const data = await res.json();
+      
+      const data = res.data;
         
-        // Save tokens if provided, else just set auth
-        if (data.accessToken) localStorage.setItem("accessToken", data.accessToken);
-        if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
-        if (data.userId) localStorage.setItem("userId", data.userId);
-        if (data.username) localStorage.setItem("username", data.username);
-        
-        // Fallback for demo mock if backend doesn't return exactly this
-        localStorage.setItem("isAuthenticated", "true"); 
-        
-        setAuthenticated(true);
-        navigate("/dashboard");
-      } else {
-        setError("Invalid username or password");
+      // Save tokens if provided, else just set auth
+      if (data.accessToken) localStorage.setItem("accessToken", data.accessToken);
+      if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
+      if (data.userId) localStorage.setItem("userId", data.userId);
+      if (data.username) localStorage.setItem("username", data.username);
+      
+      if (data.email) {
+        localStorage.setItem("email", data.email);
+      } else if (username.includes('@')) {
+          // Fallback: If user logged in with email, save it as email
+          localStorage.setItem("email", username);
       }
-    } catch {
-      setError("Network error. Please try again later.");
+
+      if (data.firstName) localStorage.setItem("firstName", data.firstName);
+      if (data.lastName) localStorage.setItem("lastName", data.lastName);
+      
+      // Fallback for demo mock if backend doesn't return exactly this
+      localStorage.setItem("isAuthenticated", "true"); 
+      
+      setAuthenticated(true);
+      navigate("/dashboard");
+
+    } catch (err) {
+      if (err.response) {
+         setError("Invalid username or password");
+      } else {
+         setError("Network error. Please try again later.");
+      }
     }
   };
 
