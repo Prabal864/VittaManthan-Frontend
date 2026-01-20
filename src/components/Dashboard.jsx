@@ -26,11 +26,16 @@ import {
   Clock,
   AlertCircle,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  User,
+  Edit,
+  ChevronDown
 } from "lucide-react";
+import EditProfileModal from "./EditProfileModal";
 import "../index.css";
 import "../styles/Transactions.css";
 import "../styles/TransactionsCarousel.css";
+import "../styles/ConsentManager.css";
 
 const Dashboard = ({ setAuthenticated }) => {
   const [activeSection, setActiveSection] = useState(() => {
@@ -58,6 +63,58 @@ const Dashboard = ({ setAuthenticated }) => {
     }
     return [];
   });
+
+  const getUserInfoFromStorage = () => {
+    const username = localStorage.getItem("username");
+    const email = localStorage.getItem("email");
+    const firstName = localStorage.getItem("firstName");
+    const lastName = localStorage.getItem("lastName");
+
+    let displayName = username || "User";
+    if (firstName && lastName) {
+      displayName = `${firstName} ${lastName}`;
+    } else if (firstName) {
+      displayName = firstName;
+    }
+
+    let displayEmail = email || "";
+    if (!displayEmail && username && username.includes('@')) {
+      displayEmail = username;
+    }
+
+    const initials = displayName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
+    return {
+      name: displayName,
+      email: displayEmail,
+      initials
+    };
+  };
+
+  const [userInfo, setUserInfo] = useState(getUserInfoFromStorage);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+
+  const fetchUserInfo = () => {
+    setUserInfo(getUserInfoFromStorage());
+  };
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event) => {
+      if (isProfileMenuOpen && !event.target.closest('.user-profile')) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isProfileMenuOpen]);
 
   const handleConsentClick = async (id) => {
     setConsentId(id);
@@ -458,16 +515,47 @@ const Dashboard = ({ setAuthenticated }) => {
             >
               {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
             </button>
-            <div className="user-profile">
-              <div className="avatar"></div>
+            <div className="user-profile" onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}>
+              <div className="avatar">{userInfo.initials}</div>
               <div className="user-info">
-                <span className="name">Ralph Edwards</span>
-                <span className="email">ralph.edwards@gmail.com</span>
+                <span className="name">{userInfo.name}</span>
+                {userInfo.email && <span className="email">{userInfo.email}</span>}
               </div>
-              <span className="chevron">⌄</span>
+              <span className="chevron">
+                 <ChevronDown size={16} className={`transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
+              </span>
+
+              {isProfileMenuOpen && (
+                <div className="profile-dropdown-menu">
+                  <div className="profile-dropdown-header">
+                     <span className="dropdown-user-name">{userInfo.name}</span>
+                     <span className="dropdown-user-email">{userInfo.email || "No email set"}</span>
+                  </div>
+                  <button className="profile-dropdown-item" onClick={(e) => {
+                     e.stopPropagation();
+                     setIsEditProfileModalOpen(true);
+                     setIsProfileMenuOpen(false);
+                  }}>
+                    <Edit size={16} /> Edit Profile / Username
+                  </button>
+                  <button className="profile-dropdown-item danger" onClick={(e) => {
+                    e.stopPropagation();
+                    handleLogout();
+                  }}>
+                    <LogOut size={16} /> Log Out
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </header>
+
+        <EditProfileModal 
+           isOpen={isEditProfileModalOpen}
+           onClose={() => setIsEditProfileModalOpen(false)}
+           userInfo={userInfo}
+           onUpdate={fetchUserInfo}
+        />
 
         <section className="dashboard-content-wrapper">
           {activeSection === "Transactions" ? (
@@ -479,7 +567,8 @@ const Dashboard = ({ setAuthenticated }) => {
                   <div className="carousel-track">
                     {activeConsents.map((consent, index) => {
                       const styleObj = getCardStyle(consent.id || `consent-${index}`);
-                      const displayId = (consent.id || "").padEnd(16, "0").slice(0, 16).match(/.{1,4}/g)?.join(" ") || "0000 0000 0000 0000";
+                      const cleanId = (consent.id || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                      const displayId = cleanId.padEnd(16, "0").slice(0, 16).match(/.{1,4}/g)?.join(" ") || "0000 0000 0000 0000";
 
                       return (
                         <div 
@@ -489,10 +578,12 @@ const Dashboard = ({ setAuthenticated }) => {
                           style={{ 
                               background: styleObj.background,
                               ...styleObj.vars,
-                              minWidth: '280px',
+                              minWidth: '360px',
+                              height: '230px',
                               cursor: 'pointer',
                               border: consentId === consent.id ? '2px solid #fff' : 'none',
-                              transform: consentId === consent.id ? 'scale(1.02)' : 'scale(1)'
+                              transform: consentId === consent.id ? 'scale(1.02)' : 'scale(1)',
+                              padding: '1.5rem'
                           }}
                         >
                           <div className="card-shine"></div>
@@ -517,20 +608,22 @@ const Dashboard = ({ setAuthenticated }) => {
                               </div>
                           </div>
                           
-                          <div className="card-number-large" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>{displayId}</div>
+                          <div className="card-number-large" style={{ fontSize: '1.4rem', margin: 'auto 0', letterSpacing: '2px' }}>{displayId}</div>
 
-                          <div className="card-bottom-row">
-                            <div className="card-info-col">
-                              <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem' }}>CONSENT HOLDER</span>
-                              <span className="card-value" style={{ color: '#fff' }}>{consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'UNKNOWN'}</span>
-                            </div>
-                            <div className="card-info-col">
-                              <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem' }}>CREATED</span>
-                              <span className="card-value" style={{ color: '#fff' }}>{new Date(consent.createdAt).toLocaleDateString()}</span>
+                          <div className="card-bottom-row" style={{ marginTop: '0.5rem' }}>
+                            <div style={{ display: 'flex', gap: '2rem' }}>
+                                <div className="card-info-col">
+                                  <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem', marginBottom: '4px', display: 'block', letterSpacing: '1px' }}>CONSENT HOLDER</span>
+                                  <span className="card-value" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>{consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'UNKNOWN'}</span>
+                                </div>
+                                <div className="card-info-col">
+                                  <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem', marginBottom: '4px', display: 'block', letterSpacing: '1px' }}>CREATED</span>
+                                  <span className="card-value" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>{new Date(consent.createdAt).toLocaleDateString()}</span>
+                                </div>
                             </div>
                             <div className="card-logo-circles">
-                                <div className="circle red"></div>
-                                <div className="circle yellow"></div>
+                                <div className="circle red" style={{ width: '36px', height: '36px' }}></div>
+                                <div className="circle yellow" style={{ width: '36px', height: '36px' }}></div>
                             </div>
                           </div>
                         </div>
