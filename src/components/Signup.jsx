@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from 'axios';
 
 // Simple SVG Icons
 const UserIcon = () => (
@@ -57,32 +58,42 @@ const Signup = ({ setAuthenticated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8086/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+      const res = await axios.post("http://localhost:8086/api/auth/register", { 
           username, 
           email, 
           password, 
           firstName, 
           lastName, 
           phoneNumber 
-        }),
+        }, {
+        headers: { "Content-Type": "application/json" },
       });
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("userId", data.userId);
-        localStorage.setItem("username", data.username);
+      
+      const data = res.data;
         
-        setAuthenticated(true);
-        navigate("/dashboard");
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("username", data.username);
+      
+      if (data.email) {
+        localStorage.setItem("email", data.email);
       } else {
-        setError("Signup failed");
+        localStorage.setItem("email", email);
       }
-    } catch {
-      setError("Network error");
+
+      if (data.firstName) localStorage.setItem("firstName", data.firstName);
+      if (data.lastName) localStorage.setItem("lastName", data.lastName);
+      
+      setAuthenticated(true);
+      navigate("/dashboard");
+
+    } catch (err) {
+      if (err.response) {
+        setError("Signup failed");
+      } else {
+        setError("Network error");
+      }
     }
   };
 
