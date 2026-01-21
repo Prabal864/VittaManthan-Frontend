@@ -1,9 +1,9 @@
-/* Dashboard Redesign Layout v2 */
+﻿/* Dashboard Redesign Layout v2 */
 
 .dashboard-container-v2 {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 12px; 
     width: 100%;
 }
 
@@ -12,8 +12,8 @@
     align-items: center;
     justify-content: space-between;
     background: var(--bg-card);
-    padding: 1rem 1.5rem;
-    border-radius: 16px;
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     border: 1px solid var(--border-color);
 }
@@ -21,24 +21,24 @@
 .filter-group {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .filter-label {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-secondary);
 }
 
 .modern-dropdown {
-    padding: 10px 16px;
-    border-radius: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
     background: var(--bg-secondary);
     color: var(--text-primary);
-    font-size: 0.95rem;
-    min-width: 240px;
-    max-width: 400px;
+    font-size: 0.9rem;
+    min-width: 200px;
+    max-width: 300px;
     outline: none;
     transition: all 0.2s;
     cursor: pointer;
@@ -50,8 +50,8 @@
 
 .dashboard-content-grid {
     display: grid;
-    grid-template-columns: 1fr 340px; /* Main content vs Sidebar */
-    gap: 24px;
+    grid-template-columns: 1fr 320px; /* Main content vs Sidebar specific width */
+    gap: 16px;
     align-items: start;
 }
 
@@ -67,22 +67,22 @@
 .main-content {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
 }
 
 .sidebar-content {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     position: sticky;
-    top: 24px; 
+    top: 80px; /* Header height (64px) + Gap (16px) */
 }
 
 /* Stats Row Redesign */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    gap: 12px;
 }
 
 @media (max-width: 768px) {
@@ -94,12 +94,12 @@
 /* Graph Section */
 .graph-section-wrapper {
     background: var(--bg-card);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 0.75rem;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     align-items: stretch;
 }
 
@@ -112,7 +112,7 @@
 .spending-graph-side {
     flex: 2;
     border-right: 1px solid var(--border-color);
-    padding-right: 2rem;
+    padding-right: 1rem;
 }
 
 @media (max-width: 900px) {
@@ -255,8 +255,8 @@
 /* Transactions Table Redesign */
 .invoices-section {
     background: var(--bg-card);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 0.75rem;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
@@ -265,10 +265,10 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
 }
 .section-header h3 {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     margin: 0;
 }
@@ -302,9 +302,9 @@
 }
 
 .invoices-table td {
-    padding: 1rem 0;
+    padding: 0.5rem 0;
     border-bottom: 1px solid var(--border-color);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-primary);
     vertical-align: middle;
 }
@@ -320,16 +320,16 @@
 /* Sidebar Widget */
 .payment-widget {
     background: var(--bg-card);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 0.75rem;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
 }
 
 .right-widget h3 {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .add-payment-btn {
@@ -351,13 +351,13 @@
 /* Override Stat Card to ensure alignment */
 .stat-card {
     background: var(--bg-card);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 0.75rem;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
     transition: transform 0.2s;
 }
 .stat-card:hover {
@@ -381,14 +381,14 @@
 .dashboard-row-split {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 24px;
+    gap: 12px;
 }
 @media (max-width: 900px) { .dashboard-row-split { grid-template-columns: 1fr; } }
 
 .widget-card {
     background: var(--bg-card);
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: 12px;
+    padding: 0.75rem;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 20px rgba(0,0,0,0.02);
     display: flex;
@@ -399,12 +399,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
-.widget-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+.widget-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
 
 /* Progress Bars (Savings) */
-.savings-list { display: flex; flex-direction: column; gap: 20px; }
+.savings-list { display: flex; flex-direction: column; gap: 16px; }
 .saving-item { display: flex; flex-direction: column; gap: 8px; }
 .saving-info { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; }
 .saving-icon { 
@@ -698,4 +698,227 @@
 }
 .mastercard-logo .circle.red { background: #eb001b; opacity: 0.8; }
 .mastercard-logo .circle.yellow { background: #f79e1b; opacity: 0.8; margin-left: -10px; }
+
+
+/* Sidebar Collapsed State */
+.sidebar.collapsed {
+    width: 80px !important;
+    padding: 24px 12px !important;
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+    gap: 0;
+}
+
+.sidebar.collapsed nav ul li {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.sidebar.collapsed .icon {
+    margin-right: 0 !important;
+}
+
+.sidebar.collapsed .nav-section-label,
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .badge {
+    display: none;
+}
+
+
+
+/* Sidebar Collapsed State */
+.sidebar.collapsed {
+    width: 80px !important;
+    padding: 24px 12px;
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed .logo {
+    justify-content: center;
+    gap: 0;
+}
+
+.sidebar.collapsed nav ul li {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+.sidebar.collapsed .icon {
+    margin-right: 0 !important;
+}
+
+
+/* Enhanced Header Styles Removed - using Compact Header below */
+
+
+
+.dashboard-header .header-left { flex-wrap: wrap; }
+.dashboard-header .modern-dropdown { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); }
+.dashboard-header .modern-dropdown option { background: var(--bg-secondary); }
+
+
+/* Premium Stat Cards */
+.stat-card-premium {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    border-color: rgba(255,255,255,0.1);
+}
+
+.stat-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.stat-icon-wrapper.income { background: rgba(34, 197, 94, 0.1); }
+.stat-icon-wrapper.expense { background: rgba(239, 68, 68, 0.1); }
+.stat-icon-wrapper.category { background: rgba(139, 92, 246, 0.1); }
+
+.stat-content {
+    flex: 1;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.stat-content .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.stat-content .stat-value {
+    font-size: 1.25rem;
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 20px;
+    z-index: 1;
+}
+.stat-trend.positive { color: #22c55e; background: rgba(34, 197, 94, 0.1); }
+.stat-trend.negative { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+.stat-bg-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.15;
+    z-index: 0;
+}
+.stat-bg-decoration.income { background: #22c55e; }
+.stat-bg-decoration.expense { background: #ef4444; }
+
+.stat-mini-chart {
+    width: 60px;
+    opacity: 0.7;
+}
+
+
+/* Layout Overrides for Fixed Header */
+.dashboard-main {
+    padding: 0 !important; /* Override index.css to allow full-width header */
+}
+
+.dashboard-content-wrapper {
+    padding: 24px; /* Move padding here */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Compact Sticky Header */
+.dashboard-header {
+    padding: 0 24px;
+    background: rgba(10, 10, 15, 0.85); /* Darker, semi-transparent background */
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    /* Sticky Positioning */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    margin-bottom: 0 !important;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.theme-light .dashboard-header {
+    background: rgba(255, 255, 255, 0.85);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header-left h2 {
+    font-size: 1.25rem;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.header-left p {
+    font-size: 0.75rem;
+    margin: 0;
+    line-height: 1.2;
+    opacity: 0.7;
+}
+
+.dashboard-filter-inline .modern-dropdown {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    height: auto;
+    background: transparent;
+    border: 1px solid var(--border-color);
+}
+
+.dashboard-filter-inline .modern-dropdown:hover {
+    background: var(--bg-secondary);
+}
+
+.header-right .user-profile {
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: transparent;
+    border: none;
+}
+
+.header-right .user-profile:hover {
+    background: var(--bg-secondary);
+}
 

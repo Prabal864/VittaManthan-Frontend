@@ -428,11 +428,11 @@
 .transactions-table-header {
   display: grid;
   grid-template-columns: 40px 1fr 1.5fr 1fr 0.8fr 1.2fr 1fr 1.2fr 1.2fr;
-  padding: 8px 32px;
+  padding: 6px 16px;
   margin-bottom: 0;
   color: #9fb3c8;
   font-weight: 700;
-  font-size: 0.75em;
+  font-size: 0.65em;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   background: transparent;
@@ -443,7 +443,7 @@
   top: 0;
   z-index: 2;
   backdrop-filter: blur(10px);
-  gap: 12px;
+  gap: 8px;
 }
 
 .theme-light .transactions-table-header {
@@ -490,9 +490,9 @@
   display: grid;
   grid-template-columns: 40px 1fr 1.5fr 1fr 0.8fr 1.2fr 1fr 1.2fr 1.2fr;
   align-items: center;
-  padding: 0 32px; /* Reduced vertical padding */
-  min-height: 52px; /* Slightly increased for better spacing */
-  gap: 12px;
+  padding: 0 16px;
+  min-height: 32px;
+  gap: 8px;
   position: relative;
   z-index: 2;
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
@@ -519,8 +519,8 @@
   display: flex;
   align-items: center;
   color: #cbd5e1;
-  font-size: 0.85em;
-  padding: 0 8px;
+  font-size: 0.75em;
+  padding: 0 4px;
   overflow: hidden;
   white-space: nowrap;
   height: 100%;

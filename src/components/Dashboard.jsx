@@ -1,4 +1,4 @@
-import "../styles/DashboardRedesign.css";
+import "../index.css";
 import React, { useMemo, useState, useEffect } from "react";
 import { fetchTransactionsByConsentId } from "../api";
 import { useTransactionsByConsentId } from "../hooks/useTransactionsByConsentId";
@@ -13,7 +13,9 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend
+  Legend,
+  BarChart,
+  Bar
 } from 'recharts';
 import ConsentManager from "./ConsentManager";
 import ProcessingModal from "./ProcessingModal";
@@ -44,10 +46,13 @@ import {
   ChevronRight,
   User,
   Edit,
-  ChevronDown
+  ChevronDown,
+  Wallet,
+  TrendingUp,
+  TrendingDown
 } from "lucide-react";
 import EditProfileModal from "./EditProfileModal";
-import "../index.css";
+import "../styles/DashboardRedesign.css";
 import "../styles/Transactions.css";
 import "../styles/TransactionsCarousel.css";
 import "../styles/ConsentManager.css";
@@ -63,7 +68,10 @@ const Dashboard = ({ setAuthenticated }) => {
   const [theme, setTheme] = useState("dark");
   const [selectedConsentId, setSelectedConsentId] = useState("ALL"); // New State for Dropdown
   const [graphTimeRange, setGraphTimeRange] = useState("Weekly"); // State for Graph Time Range
+  const [graphStartDate, setGraphStartDate] = useState(""); // Custom Start Date
+  const [graphEndDate, setGraphEndDate] = useState("");   // Custom End Date
   const [isStackExpanded, setIsStackExpanded] = useState(false); // New State for Stack Animation
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // Sidebar State
   const [consentId, setConsentId] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 12;
@@ -159,42 +167,129 @@ const Dashboard = ({ setAuthenticated }) => {
         
         const results = await Promise.all(statsPromises);
         
-        let income = 0;
-        let spending = 0;
-        let count = 0;
-        const spendingCategories = {};
         let allTxList = [];
-
         results.forEach(data => {
             const txs = Array.isArray(data) ? data : (data?.transactions || []);
-            count += txs.length;
             allTxList = [...allTxList, ...txs];
-            txs.forEach(t => {
-                const amount = Number(t.amount);
-                if (!isNaN(amount)) {
-                    if (t.type === 'CREDIT') {
-                        income += amount;
-                    } else if (t.type === 'DEBIT') {
-                        spending += amount;
-
-                        // Categorization Logic (Reuse existing logic)
-                        let category = 'Others';
-                        const narration = (t.narration || '').toLowerCase();
-                        const mode = (t.mode || '').toLowerCase();
-
-                        if (mode.includes('upi') || narration.includes('upi')) category = 'UPI Payments';
-                        else if (mode.includes('imps') || mode.includes('neft') || mode.includes('rtgs')) category = 'Transfers';
-                        else if (mode.includes('card') || narration.includes('pos') || narration.includes('visa') || narration.includes('mastercard')) category = 'Card Spend';
-                        else if (mode.includes('atm') || narration.includes('atm') || narration.includes('withdraw')) category = 'Cash Withdrawal';
-                        else if (narration.includes('interest')) category = 'Bank Charges/Interest';
-                        else if (narration.includes('food') || narration.includes('zomato') || narration.includes('swiggy')) category = 'Food & Dining';
-                        else if (narration.includes('uber') || narration.includes('ola') || narration.includes('fuel')) category = 'Transport';
-
-                        spendingCategories[category] = (spendingCategories[category] || 0) + amount;
-                    }
-                }
-            });
         });
+
+        // --- Date Range & Filter Logic ---
+        const normalizeDate = (d) => {
+           const n = new Date(d);
+           n.setHours(0, 0, 0, 0);
+           return n;
+        };
+
+        let rangeStart, rangeEnd;
+        
+        // Find latest transaction date for default anchoring
+        let latestTxDate = new Date();
+        if (allTxList.length > 0) {
+             const timestamps = allTxList
+                .map(t => t.date || t.timestamp || t.valueDate)
+                .map(ts => new Date(ts).getTime())
+                .filter(ts => !isNaN(ts));
+             if (timestamps.length > 0) {
+                 latestTxDate = new Date(Math.max(...timestamps));
+             }
+        }
+        latestTxDate = normalizeDate(latestTxDate);
+
+        // Determine Start/End
+        if (graphStartDate && graphEndDate) {
+            rangeStart = normalizeDate(graphStartDate);
+            rangeEnd = normalizeDate(graphEndDate);
+        } else {
+            // Default: Last 7 days ending at latest transaction
+            rangeEnd = graphEndDate ? normalizeDate(graphEndDate) : latestTxDate;
+            rangeStart = graphStartDate ? normalizeDate(graphStartDate) : new Date(rangeEnd);
+            
+            if (!graphStartDate) {
+                rangeStart.setDate(rangeEnd.getDate() - 6); // 7 days window (inclusive)
+            }
+        }
+        
+        // Safety swap
+        if (rangeStart > rangeEnd) {
+             const temp = rangeStart;
+             rangeStart = rangeEnd;
+             rangeEnd = temp;
+        }
+
+        // --- Filter Transactions & Calculate Stats ---
+        const filteredTxList = allTxList.filter(t => {
+            const raw = t.date || t.timestamp || t.bookingDate || t.valueDate;
+            if (!raw) return false;
+            const d = normalizeDate(raw);
+            return d >= rangeStart && d <= rangeEnd;
+        });
+
+        let income = 0;
+        let spending = 0;
+        let count = filteredTxList.length;
+        const spendingCategories = {};
+        const paymentMethods = {}; // New: Payment Method aggregation
+        const dateMap = new Map(); // Date String -> {income, expense}
+
+        filteredTxList.forEach(t => {
+            const amount = Number(t.amount);
+            if (!isNaN(amount)) {
+                
+                // Robust Type Checking
+                const type = String(t.type || t.transactionType || '').toUpperCase();
+                const isCredit = (type === 'CREDIT' || type === 'CR' || type === 'INCOME');
+                const isDebit = (type === 'DEBIT' || type === 'DR' || type === 'EXPENSE' || (String(t.amount).startsWith('-')));
+
+                // Add to Date Map
+                const rawDate = t.date || t.timestamp || t.bookingDate || t.valueDate;
+                if (rawDate) {
+                     const d = normalizeDate(rawDate);
+                     const key = d.toISOString().split('T')[0];
+                     if (!dateMap.has(key)) dateMap.set(key, {income: 0, expense: 0});
+                     const entry = dateMap.get(key);
+                     
+                     if (isCredit) entry.income += amount;
+                     else if (isDebit) entry.expense += Math.abs(amount);
+                }
+
+                if (isCredit) {
+                    income += amount;
+                } else if (isDebit) {
+                    const absAmount = Math.abs(amount);
+                    spending += absAmount;
+
+                    // Categorization Logic
+                    let category = 'Others';
+                    const narration = (t.narration || '').toLowerCase();
+                    const mode = (t.mode || '').toLowerCase();
+
+                    // Mode Aggregation for Graph
+                    let cleanMode = 'Others';
+                    if (mode.includes('upi')) cleanMode = 'UPI';
+                    else if (mode.includes('card') || mode.includes('pos')) cleanMode = 'Card';
+                    else if (mode.includes('neft') || mode.includes('imps') || mode.includes('rtgs')) cleanMode = 'Netbanking';
+                    else if (mode.includes('atm')) cleanMode = 'Cash';
+                    
+                    if (cleanMode === 'Others' && narration.includes('upi')) cleanMode = 'UPI'; // Fallback check
+
+                    paymentMethods[cleanMode] = (paymentMethods[cleanMode] || 0) + absAmount;
+
+
+                    if (mode.includes('upi') || narration.includes('upi')) category = 'UPI Payments';
+                    else if (mode.includes('imps') || mode.includes('neft') || mode.includes('rtgs')) category = 'Transfers';
+                    else if (mode.includes('card') || narration.includes('pos') || narration.includes('visa') || narration.includes('mastercard')) category = 'Card Spend';
+                    else if (mode.includes('atm') || narration.includes('atm') || narration.includes('withdraw')) category = 'Cash Withdrawal';
+                    else if (narration.includes('interest')) category = 'Bank Charges/Interest';
+                    else if (narration.includes('food') || narration.includes('zomato') || narration.includes('swiggy')) category = 'Food & Dining';
+                    else if (narration.includes('uber') || narration.includes('ola') || narration.includes('fuel')) category = 'Transport';
+
+                    spendingCategories[category] = (spendingCategories[category] || 0) + absAmount;
+                }
+            }
+        });
+
+
+
 
         const netSavings = income - spending;
         const balance = netSavings; // In a real app, you'd add this to opening balance
@@ -209,101 +304,32 @@ const Dashboard = ({ setAuthenticated }) => {
             }
         });
 
-        // Calculate Money Flow based on Time Range
+        // --- Generate timeline for graph ---
         const dailyStats = [];
-        const daysToStats = graphTimeRange === "Monthly" ? 30 : 7;
-        
-        // Initialize buckets (Oldest -> Newest)
-        const normalizeDate = (d) => {
-           const n = new Date(d);
-           n.setHours(0, 0, 0, 0);
-           return n;
-        };
-        
-        // 1. Determine Anchor Date (Latest Transaction Date vs Today)
-        let anchorDate = new Date();
-        if (allTxList.length > 0) {
-            const timestamps = allTxList
-                .map(t => t.date || t.timestamp || t.valueDate)
-                .map(ts => new Date(ts).getTime())
-                .filter(ts => !isNaN(ts));
-                
-            if (timestamps.length > 0) {
-                const maxTs = Math.max(...timestamps);
-                const latestTxDate = new Date(maxTs);
-                
-                // If the latest transaction is older than yesterday, use it as anchor
-                // ignoring future dates for safety
-                if (latestTxDate < new Date() && (new Date().getTime() - maxTs > 86400000 * 2)) {
-                   anchorDate = latestTxDate;
-                }
-            }
-        }
-        
-        const todayNormalized = normalizeDate(anchorDate);
-
-        for (let i = daysToStats - 1; i >= 0; i--) {
-            const d = new Date(todayNormalized);
-            d.setDate(todayNormalized.getDate() - i);
-            
-            dailyStats.push({ 
-                dateObj: d, // Keep the object for comparison debugging
-                name: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), 
-                income: 0, 
-                expense: 0 
+        let curr = new Date(rangeStart);
+        while (curr <= rangeEnd) {
+             const key = curr.toISOString().split('T')[0];
+             const dayData = dateMap.get(key) || {income:0, expense:0};
+             
+             dailyStats.push({ 
+                dateObj: new Date(curr),
+                name: curr.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), 
+                income: dayData.income, 
+                expense: dayData.expense 
             });
+            curr.setDate(curr.getDate() + 1);
         }
-
-        allTxList.forEach(t => {
-            // Robust Date Parsing
-            let rawDate = t.date || t.timestamp || t.bookingDate || t.valueDate;
-            if (!rawDate) return;
-
-            let tDate = new Date(rawDate);
-            if (isNaN(tDate.getTime())) return;
-
-            const tDateNormalized = normalizeDate(tDate);
-            
-            // Calculate difference in milliseconds
-            const diffMs = todayNormalized.getTime() - tDateNormalized.getTime();
-            // Convert to Days (round primarily to handle DST shifts if any, but simplified)
-            const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-
-            // diffDays = 0 => Anchor Date (Today/Latest)
-            // diffDays = 1 => Yesterday
-            // We only care if 0 <= diffDays < daysToStats
-            if (diffDays >= 0 && diffDays < daysToStats) {
-                 // Map diffDays to array index.
-                 // Array is sorted: [Oldest, ..., Yesterday, Today]
-                 // Index of Today (diffDays=0) should be length-1.
-                 // Index of Yesterday (diffDays=1) should be length-2.
-                 const index = dailyStats.length - 1 - diffDays;
-                 
-                 if (index >= 0 && index < dailyStats.length) {
-                    const amount = Number(t.amount || t.value || 0);
-                    if (!isNaN(amount)) {
-                         const type = String(t.type || t.transactionType || '').toUpperCase();
-                         
-                         // Check for Credit
-                         if (type === 'CREDIT' || type === 'CR' || type === 'INCOME') {
-                            dailyStats[index].income += amount;
-                         } 
-                         // Check for Debit
-                         else if (type === 'DEBIT' || type === 'DR' || type === 'EXPENSE' || (String(t.amount).startsWith('-'))) {
-                            dailyStats[index].expense += Math.abs(amount);
-                         }
-                    }
-                 }
-            }
-        });
 
         // Use dailyStats for the graphData
         const spendingTrend = dailyStats; 
 
-        // Get Top Expenses (Highest Debit Transactions)
-        const topExpenses = allTxList
-            .filter(t => t.type === 'DEBIT')
-            .sort((a, b) => Number(b.amount) - Number(a.amount))
+        // Get Top Expenses (Highest Debit Transactions from filtered list)
+        const topExpenses = filteredTxList
+            .filter(t => {
+                 const type = String(t.type || t.transactionType || '').toUpperCase();
+                 return type === 'DEBIT' || type === 'DR' || type === 'EXPENSE' || String(t.amount).startsWith('-');
+            })
+            .sort((a, b) => Math.abs(Number(b.amount)) - Math.abs(Number(a.amount)))
             .slice(0, 5);
 
         setDashboardStats({
@@ -314,9 +340,11 @@ const Dashboard = ({ setAuthenticated }) => {
             transactionCount: count,
             topSpendingCategory: topCategory,
             loading: false,
-            spendingTrend, // Now contains dailyStats array with income/expense
+            spendingTrend, 
             topExpenses,
-            spendingCategories
+            spendingCategories,
+            paymentMethods // New Field
+
         });
 
       } catch (error) {
@@ -326,7 +354,7 @@ const Dashboard = ({ setAuthenticated }) => {
     };
 
     calculateStats();
-  }, [activeConsents, selectedConsentId, graphTimeRange]); // Re-run when selection or time range changes
+  }, [activeConsents, selectedConsentId, graphStartDate, graphEndDate]); // Re-run when selection or time range changes
 
   const fetchUserInfo = () => {
     setUserInfo(getUserInfoFromStorage());
@@ -525,38 +553,80 @@ const Dashboard = ({ setAuthenticated }) => {
     const startDate = data[0]?.name || "";
     const endDate = data[data.length - 1]?.name || "";
 
+    // Determine Min/Max dates based on current consent
+    let minDate, maxDate;
+    if (selectedConsentId !== "ALL") {
+        const c = activeConsents.find(i => i.id === selectedConsentId);
+        if (c) {
+             // Try to find typical consent date range fields
+             // Assuming consentStart/consentExpiry or dateFrom/dateTo structure
+             if (c.consentStart) minDate = new Date(c.consentStart).toISOString().split('T')[0];
+             if (c.consentExpiry) maxDate = new Date(c.consentExpiry).toISOString().split('T')[0];
+             // Fallbacks if properties differ in your Consent object schema
+             if (!minDate && c.dateRange && c.dateRange.from) minDate = new Date(c.dateRange.from).toISOString().split('T')[0];
+             if (!maxDate && c.dateRange && c.dateRange.to) maxDate = new Date(c.dateRange.to).toISOString().split('T')[0];
+        }
+    }
+
     return (
-        <div className="widget-card" style={{gridColumn: '1 / -1', minHeight: '380px'}}>
-            <div className="graph-header-row">
+        <div className="widget-card" style={{gridColumn: '1 / -1', minHeight: '300px'}}>
+            <div className="graph-header-row" style={{ marginBottom: '1rem' }}>
                 <div>
-                   <h3 className="widget-title">Money Flow</h3>
-                   <div style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>Income vs Expenses</div>
+                   <h3 className="widget-title" style={{marginBottom: '2px'}}>Money Flow</h3>
+                   <div style={{fontSize: '0.75rem', color: 'var(--text-secondary)'}}>Income vs Expenses</div>
                 </div>
-                <div style={{display:'flex', gap:'10px'}}>
-                    <div className="time-period-selector active" style={{minWidth: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        {startDate} - {endDate}
+                <div style={{display:'flex', gap:'8px', alignItems:'center'}}>
+                    {/* Native Date Picker Integration */}
+                    <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                        <input 
+                            type="date"
+                            className="modern-date-input"
+                            min={minDate}
+                            max={maxDate}
+                            style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '6px',
+                                color: 'var(--text-primary)',
+                                padding: '4px 8px',
+                                fontSize: '0.75rem',
+                                outline: 'none',
+                                colorScheme: 'dark'
+                            }}
+                            value={graphStartDate}
+                            onChange={(e) => setGraphStartDate(e.target.value)}
+                        />
+                        <span style={{color: 'var(--text-secondary)', fontSize: '0.75rem'}}>-</span>
+                        <input 
+                            type="date"
+                            className="modern-date-input"
+                            min={minDate}
+                            max={maxDate}
+                            style={{
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '6px',
+                                color: 'var(--text-primary)',
+                                padding: '4px 8px',
+                                fontSize: '0.75rem',
+                                outline: 'none',
+                                colorScheme: 'dark'
+                            }}
+                            value={graphEndDate}
+                            onChange={(e) => setGraphEndDate(e.target.value)}
+                        />
                     </div>
-                    <select 
-                        className="modern-dropdown compact"
-                        value={graphTimeRange}
-                        onChange={(e) => setGraphTimeRange(e.target.value)}
-                    >
-                        <option value="Weekly">Weekly</option>
-                        <option value="Monthly">Monthly</option>
-                    </select>
                 </div>
             </div>
             
-            <div style={{width: '100%', height: '300px', display: 'flex', justifyContent: 'center'}}>
-                 {/* Fixed dimensions to prevent layout resize errors */}
+            <div style={{width: '100%', height: '280px', display: 'flex', justifyContent: 'center'}}>
+                 <ResponsiveContainer width="100%" height="100%">
                  <AreaChart
-                    width={600}
-                    height={300}
                     data={data}
                     margin={{
-                      top: 20,
-                      right: 30,
-                      left: 0,
+                      top: 10,
+                      right: 10,
+                      left: -20,
                       bottom: 0,
                     }}
                   >
@@ -624,6 +694,7 @@ const Dashboard = ({ setAuthenticated }) => {
                         activeDot={{r: 6, strokeWidth: 0}}
                       />
                   </AreaChart>
+                  </ResponsiveContainer>
             </div>
         </div>
     );
@@ -638,49 +709,7 @@ const Dashboard = ({ setAuthenticated }) => {
     const COLORS = ['#3b82f6', '#8b5cf6', '#22c55e', '#ef4444', '#f59e0b', '#ec4899'];
 
     return (
-    <div className="dashboard-row-split">
-        {/* Savings / Goals Widget */}
-        <div className="widget-card">
-            <div className="widget-header">
-                <span className="widget-title">Saving Goals</span>
-                <select style={{background:'transparent', border:'none', color:'#888', cursor:'pointer'}}><option>This Month</option></select>
-            </div>
-            <div className="savings-list">
-                 <div className="saving-item">
-                     <div className="saving-info">
-                        <div className="saving-meta">
-                            <div className="saving-icon">💰</div>
-                            <span>Mutual Funds</span>
-                        </div>
-                        <span>$900.17</span>
-                     </div>
-                     <div className="progress-bg"><div className="progress-fill" style={{width: '65%', background: 'var(--accent-purple)'}}></div></div>
-                 </div>
-
-                 <div className="saving-item">
-                     <div className="saving-info">
-                        <div className="saving-meta">
-                            <div className="saving-icon" style={{color:'#22c55e', background: 'rgba(34,197,94,0.1)'}}>📈</div>
-                            <span>Investments</span>
-                        </div>
-                        <span>$745.78</span>
-                     </div>
-                     <div className="progress-bg"><div className="progress-fill" style={{width: '45%', background: '#22c55e'}}></div></div>
-                 </div>
-
-                 <div className="saving-item">
-                     <div className="saving-info">
-                        <div className="saving-meta">
-                             <div className="saving-icon" style={{color:'#ef4444', background: 'rgba(239,68,68,0.1)'}}>✈️</div>
-                             <span>Travel Goal</span>
-                        </div>
-                        <span>$2,500.00</span>
-                     </div>
-                     <div className="progress-bg"><div className="progress-fill" style={{width: '25%', background: '#ef4444'}}></div></div>
-                 </div>
-            </div>
-        </div>
-
+      <div className="dashboard-row-split" style={{ gridTemplateColumns: '350px 1fr' }}>
         {/* Statistics Pie Chart Widget */}
         <div className="widget-card">
             <div className="widget-header">
@@ -688,13 +717,13 @@ const Dashboard = ({ setAuthenticated }) => {
             </div>
             <div className="donut-container" style={{display:'flex', flexDirection:'column', height:'100%', minHeight: '220px', alignItems: 'center', justifyContent: 'center'}}>
                  {hasData ? (
-                    <PieChart width={250} height={250}>
+                    <PieChart width={300} height={300}>
                         <Pie
                             data={pieData}
                             cx="50%"
                             cy="50%"
-                            innerRadius={60}
-                            outerRadius={80}
+                            innerRadius={75}
+                            outerRadius={105}
                             fill="#8884d8"
                             paddingAngle={5}
                             dataKey="value"
@@ -720,6 +749,49 @@ const Dashboard = ({ setAuthenticated }) => {
                  )}
             </div>
         </div>
+
+        {/* Highest Value Transactions Table - Moved Here for Layout */}
+        <div className="invoices-section" style={{ height: '100%' }}>
+            <div className="section-header">
+                <h3>Highest Transactions</h3>
+                <button className="new-invoice-btn" onClick={() => setActiveSection("Transactions")}>See All</button>
+            </div>
+            <div className="table-responsive">
+            {dashboardStats.topExpenses.length > 0 ? (
+                <table className="invoices-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dashboardStats.topExpenses.slice(0, 5).map((tx, idx) => {
+                             const txDate = tx.timestamp || tx.date || tx.bookingDate || tx.valueDate;
+                             const displayDate = txDate ? new Date(txDate).toLocaleDateString() : 'N/A';
+                             return (
+                                <tr key={idx}>
+                                    <td>
+                                        <div className="tx-name-wrap">
+                                            <div className="tx-icon-box">🧾</div>
+                                            <span style={{fontWeight:500, fontSize: '0.9rem'}}>{tx.id || tx.txnId || 'Unknown'}</span>
+                                        </div>
+                                    </td>
+                                    <td>{displayDate}</td>
+                                    <td>{tx.mode || 'Payment'}</td>
+                                    <td style={{color: '#ef4444', fontWeight: '700'}}>{formatCurrency(tx.amount, "₹")}</td>
+                                </tr>
+                             );
+                        })}
+                    </tbody>
+                </table>
+            ) : (
+                <div className="empty-chart-msg">No relevant transactions found.</div>
+            )}
+            </div>
+        </div>
     </div>
   );
   };
@@ -728,110 +800,62 @@ const Dashboard = ({ setAuthenticated }) => {
 
   const renderDashboardHome = () => (
     <div className="dashboard-container-v2">
-        {/* Header / Filter Bar */}
-        <div className="dashboard-filter-bar">
-            <div className="filter-group">
-                <span className="filter-label">Financial Overview For:</span>
-                <select 
-                    value={selectedConsentId}
-                    onChange={(e) => setSelectedConsentId(e.target.value)}
-                    className="modern-dropdown"
-                >
-                    <option value="ALL">All Accounts (Consolidated)</option>
-                    {activeConsents.map(c => {
-                         const label = c.start 
-                            ? `Card ending in ...${c.id.slice(-4)}` 
-                            : (c.vua ? `${c.vua.split('@')[0]} (${c.vua.split('@')[1] || 'VUA'})` : `Consent ID: ${c.id.slice(0,8)}...`);
-                         return (
-                            <option key={c.id} value={c.id}>{label}</option>
-                         );
-                    })}
-                </select>
-            </div>
-            
-            <div className="filter-actions">
-                 <span style={{ fontSize: '0.85rem', color: '#888' }}>
-                    {dashboardStats.loading ? 'Syncing...' : `Last updated: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`}
-                 </span>
-            </div>
-        </div>
-
         <div className="dashboard-content-grid">
             {/* Main Column */}
             <div className="main-content">
-                {/* 3-Column Stats Grid */}
+                {/* 3-Column Stats Grid Redesign */}
                 <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-info">
+                    <div className="stat-card-premium">
+                        <div className="stat-icon-wrapper income">
+                            <ArrowDownLeft size={24} color="#22c55e" />
+                        </div>
+                        <div className="stat-content">
                             <span className="stat-label">Total Income</span>
                             <h3 className="stat-value">{dashboardStats.loading ? "..." : formatCurrency(dashboardStats.totalIncome, "₹")}</h3>
-                            {renderMiniChart('white')}
                         </div>
+                        <div className="stat-trend positive">
+                            <TrendingUp size={14} />
+                            <span>12%</span>
+                        </div>
+                        <div className="stat-bg-decoration income"></div>
                     </div>
                     
-                    <div className="stat-card">
-                        <div className="stat-info">
+                    <div className="stat-card-premium">
+                        <div className="stat-icon-wrapper expense">
+                             <ArrowUpRight size={24} color="#ef4444" />
+                        </div>
+                        <div className="stat-content">
                             <span className="stat-label">Total Spending</span>
                             <h3 className="stat-value">{dashboardStats.loading ? "..." : formatCurrency(dashboardStats.totalSpending, "₹")}</h3>
-                            {renderMiniChart('rgba(255,255,255,0.5)')}
                         </div>
+                        <div className="stat-trend negative">
+                             <TrendingUp size={14} /> {/* Always trending up in amount typically means more spending, but visually we might want red */}
+                             <span>8%</span>
+                        </div>
+                        <div className="stat-bg-decoration expense"></div>
                     </div>
 
-                    <div className="stat-card">
-                        <div className="stat-info">
+                    <div className="stat-card-premium">
+                        <div className="stat-icon-wrapper category">
+                             <Wallet size={24} color="#8b5cf6" />
+                        </div>
+                        <div className="stat-content">
                             <span className="stat-label">Top Category</span>
                              <h3 className="stat-value" style={{fontSize: '1.2rem'}}>{dashboardStats.loading ? "..." : dashboardStats.topSpendingCategory}</h3>
-                             {renderMiniChart('var(--accent-purple)')}
+                        </div>
+                        <div className="stat-mini-chart">
+                            {renderMiniChart('var(--accent-purple)')}
                         </div>
                     </div>
                 </div>
+
 
                 {/* Money Flow Graph */}
                 {renderSpendingGraph()}
 
-                {/* Savings & Stats Row */}
-                {renderStatisticsAndSavings()}
 
-                {/* Highest Value Transactions Table */}
-                <div className="invoices-section">
-                    <div className="section-header">
-                        <h3>Highest Value Transactions</h3>
-                        <button className="new-invoice-btn" onClick={() => setActiveSection("Transactions")}>See All</button>
-                    </div>
-                    <div className="table-responsive">
-                    {dashboardStats.topExpenses.length > 0 ? (
-                        <table className="invoices-table">
-                            <thead>
-                                <tr>
-                                    <th>Transaction</th>
-                                    <th>Date</th>
-                                    <th>Category</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {dashboardStats.topExpenses.map((tx, idx) => (
-                                    <tr key={idx}>
-                                        <td>
-                                            <div className="tx-name-wrap">
-                                                <div className="tx-icon-box">🧾</div>
-                                                <span style={{fontWeight:500}}>{tx.narration || tx.id || 'Unknown'}</span>
-                                            </div>
-                                        </td>
-                                        <td>{new Date(tx.date || tx.timestamp).toLocaleDateString()}</td>
-                                        <td>{tx.mode || 'Payment'}</td>
-                                        <td style={{color: '#ef4444', fontWeight: '700'}}>{formatCurrency(tx.amount, "₹")}</td>
-                                        <td><span className="status-badge complete">Completed</span></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className="empty-chart-msg">No relevant transactions found.</div>
-                    )}
-                    </div>
-                </div>
+                {/* Savings & Stats Row (Combined with Top Transactions) */}
+                {renderStatisticsAndSavings()}
             </div>
 
             {/* Sidebar Column */}
@@ -922,20 +946,73 @@ const Dashboard = ({ setAuthenticated }) => {
 
                     <button className="add-payment-btn" onClick={() => setActiveSection('Consent')}>Manage Accounts</button>
                     
-                    <div className="widget-card" style={{marginTop: '24px', padding: '20px'}}>
-                        <h4 style={{marginBottom: '16px'}}>Recent Activity</h4>
-                        <div style={{display:'flex', flexDirection:'column', gap:'16px'}}>
-                            <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
-                                <div style={{width:'36px', height:'36px', borderRadius:'50%', background:'#f0f9ff', display:'flex', alignItems:'center', justifyContent:'center', color:'#2563eb'}}>S</div>
-                                <div><div style={{fontSize:'0.9rem', fontWeight:600}}>Stripe</div><div style={{fontSize:'0.75rem', color:'#888'}}>Today, 7:18 AM</div></div>
-                                <div style={{marginLeft:'auto', fontWeight:600, color:'#22c55e'}}>+$658.10</div>
-                            </div>
-                            <div style={{display:'flex', gap:'12px', alignItems:'center'}}>
-                                <div style={{width:'36px', height:'36px', borderRadius:'50%', background:'#fdf2f8', display:'flex', alignItems:'center', justifyContent:'center', color:'#db2777'}}>F</div>
-                                <div><div style={{fontSize:'0.9rem', fontWeight:600}}>Facebook</div><div style={{fontSize:'0.75rem', color:'#888'}}>Yesterday</div></div>
-                                <div style={{marginLeft:'auto', fontWeight:600, color:'#ef4444'}}>- $425.00</div>
-                            </div>
-                        </div>
+                </div>
+
+                {/* Right Column Analytics */}
+                <div className="widget-card" style={{marginTop: '20px'}}>
+                    <div className="widget-header">
+                        <h3 className="widget-title">Payment Modes</h3>
+                    </div>
+                    <div style={{height: '180px'}}>
+                         <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={Object.entries(dashboardStats.paymentMethods || {}).map(([name, value]) => ({name, value}))}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" opacity={0.3} />
+                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 10}} />
+                                <YAxis hide />
+                                <Tooltip 
+                                    cursor={{fill: 'rgba(255,255,255,0.05)'}}
+                                    contentStyle={{backgroundColor: '#1e293b', borderRadius: '8px', border: 'none'}}
+                                    itemStyle={{color: '#fff'}}
+                                    formatter={(val) => formatCurrency(val, '₹')}
+                                />
+                                <Bar dataKey="value" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={32}>
+                                    {
+                                      Object.keys(dashboardStats.paymentMethods || {}).map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={['#6366f1', '#8b5cf6', '#ec4899', '#10b981'][index % 4]} />
+                                      ))
+                                    }
+                                </Bar>
+                            </BarChart>
+                         </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="widget-card" style={{marginTop: '20px'}}>
+                     <div className="widget-header">
+                        <h3 className="widget-title">Consent Health</h3>
+                    </div>
+                    <div className="consent-timeline-list" style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                        {activeConsents.slice(0, 3).map((c, i) => {
+                            const daysLeft = c.consentExpiry ? Math.ceil((new Date(c.consentExpiry) - new Date()) / (1000 * 60 * 60 * 24)) : 30;
+                            const isCritical = daysLeft < 7;
+                            return (
+                                <div key={i} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px', background: 'var(--bg-secondary)', borderRadius: '8px'}}>
+                                    <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                        <div style={{
+                                            width: '24px', height: '24px', borderRadius: '50%', 
+                                            background: isCritical ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            color: isCritical ? '#ef4444' : '#22c55e'
+                                        }}>
+                                            <Clock size={14} />
+                                        </div>
+                                        <div style={{overflow: 'hidden'}}>
+                                            <div style={{fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '80px', overflow: 'hidden'}}>
+                                                {c.vua ? c.vua.split('@')[0] : `ID: ${c.id.slice(-4)}`}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style={{textAlign: 'right'}}>
+                                        <span style={{
+                                            fontSize: '0.75rem', fontWeight: 600,
+                                            color: isCritical ? '#ef4444' : (daysLeft < 15 ? '#f59e0b' : '#22c55e')
+                                        }}>
+                                            {daysLeft}d
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -960,66 +1037,93 @@ const Dashboard = ({ setAuthenticated }) => {
 
   return (
     <div className={`dashboard-root ${theme === "light" ? "theme-light" : ""}`}>
-      <aside className="sidebar">
-        <div className="logo">
-          <div className="logo-icon-box"><Zap size={20} fill="currentColor" /></div>
-          <span className="logo-text">VittaManthan</span>
+      <aside className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="logo" style={{justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', padding: isSidebarCollapsed ? '0' : '0 4px'}}>
+          <div className="logo-icon-box" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} style={{cursor: 'pointer'}}>
+            {isSidebarCollapsed ? <ChevronRight size={20} color="white" /> : <Zap size={20} fill="currentColor" />}
+          </div>
+          {!isSidebarCollapsed && <span className="logo-text">VittaManthan</span>}
         </div>
         
-        <div className="nav-section-label">MENU</div>
+        {!isSidebarCollapsed && <div className="nav-section-label">MENU</div>}
         <nav>
           <ul>
             <li className={activeSection === "Dashboard" ? "active" : ""} onClick={() => setActiveSection("Dashboard")}>
-              <span className="icon"><LayoutDashboard size={20} /></span> Dashboard
+              <span className="icon"><LayoutDashboard size={20} /></span> {!isSidebarCollapsed && "Dashboard"}
             </li>
             <li className={activeSection === "Statistics" ? "active" : ""} onClick={() => setActiveSection("Statistics")}>
-              <span className="icon"><BarChart2 size={20} /></span> Statistics
+              <span className="icon"><BarChart2 size={20} /></span> {!isSidebarCollapsed && "Statistics"}
             </li>
             <li className={activeSection === "Savings" ? "active" : ""} onClick={() => setActiveSection("Savings")}>
-              <span className="icon"><PiggyBank size={20} /></span> Savings
+              <span className="icon"><PiggyBank size={20} /></span> {!isSidebarCollapsed && "Savings"}
             </li>
             <li className={activeSection === "Portfolio" ? "active" : ""} onClick={() => setActiveSection("Portfolio")}>
-              <span className="icon"><Briefcase size={20} /></span> Portfolio
+              <span className="icon"><Briefcase size={20} /></span> {!isSidebarCollapsed && "Portfolio"}
             </li>
             <li className={activeSection === "Messages" ? "active" : ""} onClick={() => setActiveSection("Messages")}>
-              <span className="icon"><MessageSquare size={20} /></span> Messages <span className="badge">4</span>
+              <span className="icon"><MessageSquare size={20} /></span> {!isSidebarCollapsed && "Messages"} {(!isSidebarCollapsed) && <span className="badge">4</span>}
             </li>
             <li className={activeSection === "Transactions" ? "active" : ""} onClick={() => setActiveSection("Transactions")}>
-              <span className="icon"><ArrowRightLeft size={20} /></span> Transactions
+              <span className="icon"><ArrowRightLeft size={20} /></span> {!isSidebarCollapsed && "Transactions"}
             </li>
             <li className={activeSection === "Consent" ? "active" : ""} onClick={() => setActiveSection("Consent")}>
-              <span className="icon"><FileCheck size={20} /></span> Consent
+              <span className="icon"><FileCheck size={20} /></span> {!isSidebarCollapsed && "Consent"}
             </li>
           </ul>
         </nav>
 
-        <div className="nav-section-label">GENERAL</div>
+        {!isSidebarCollapsed && <div className="nav-section-label">GENERAL</div>}
         <nav>
           <ul>
             <li className={activeSection === "Settings" ? "active" : ""} onClick={() => setActiveSection("Settings")}>
-              <span className="icon"><Settings size={20} /></span> Settings
+              <span className="icon"><Settings size={20} /></span> {!isSidebarCollapsed && "Settings"}
             </li>
             <li className={activeSection === "Appearances" ? "active" : ""} onClick={() => setActiveSection("Appearances")}>
-              <span className="icon"><Palette size={20} /></span> Appearances
+              <span className="icon"><Palette size={20} /></span> {!isSidebarCollapsed && "Appearances"}
             </li>
             <li className={activeSection === "Help" ? "active" : ""} onClick={() => setActiveSection("Help")}>
-              <span className="icon"><HelpCircle size={20} /></span> Help
+              <span className="icon"><HelpCircle size={20} /></span> {!isSidebarCollapsed && "Help"}
             </li>
           </ul>
         </nav>
 
-        <div className="sidebar-footer">
+        <div className="sidebar-footer" style={{justifyContent: isSidebarCollapsed ? 'center' : 'flex-start'}}>
           <button className="logout-link" onClick={handleLogout}>
-            <span className="icon"><LogOut size={20} /></span> Log Out
+            <span className="icon"><LogOut size={20} /></span> {!isSidebarCollapsed && "Log Out"}
           </button>
         </div>
       </aside>
 
       <main className="dashboard-main">
-        <header className="dashboard-header">
-          <div className="header-left">
-            <h2>{currentInfo.title}</h2>
-            <p>{currentInfo.subtitle}</p>
+        <header className="dashboard-header" style={{gap: '20px'}}>
+          <div className="header-left" style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
+            <div>
+                <h2>{currentInfo.title}</h2>
+                <p>{currentInfo.subtitle}</p>
+            </div>
+            
+            {/* Shifted Filter Bar for Dashboard Context */}
+            {activeSection === "Dashboard" && (
+                <div className="dashboard-filter-inline" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                    <span className="filter-label" style={{fontSize: '0.85rem', color: 'var(--text-secondary)', display: window.innerWidth < 1200 ? 'none' : 'block'}}>For:</span>
+                    <select 
+                        value={selectedConsentId}
+                        onChange={(e) => setSelectedConsentId(e.target.value)}
+                        className="modern-dropdown"
+                        style={{padding: '8px 12px', minWidth: '200px', fontSize: '0.9rem'}}
+                    >
+                        <option value="ALL">All Accounts (Consolidated)</option>
+                        {activeConsents.map(c => {
+                            const label = c.start 
+                                ? `Card ending in ...${c.id.slice(-4)}` 
+                                : (c.vua ? `${c.vua.split('@')[0]} (${c.vua.split('@')[1] || 'VUA'})` : `Consent ID: ${c.id.slice(0,8)}...`);
+                            return (
+                                <option key={c.id} value={c.id}>{label}</option>
+                            );
+                        })}
+                    </select>
+                </div>
+            )}
           </div>
           <div className="header-right">
             <button
@@ -1092,19 +1196,19 @@ const Dashboard = ({ setAuthenticated }) => {
                           style={{ 
                               background: styleObj.background,
                               ...styleObj.vars,
-                              minWidth: '360px',
-                              height: '230px',
+                              minWidth: '420px',
+                              height: '265px',
                               cursor: 'pointer',
                               border: consentId === consent.id ? '2px solid #fff' : 'none',
                               transform: consentId === consent.id ? 'scale(1.02)' : 'scale(1)',
-                              padding: '1.5rem'
+                              padding: '2rem'
                           }}
                         >
                           <div className="card-shine"></div>
                           
                           {/* Top Row */}
                           <div className="card-top-row">
-                              <div className="provider-logo" style={{ fontSize: '1.2rem' }}>SETU<span className="font-light">CONSENT</span></div>
+                              <div className="provider-logo" style={{ fontSize: '1.4rem' }}>SETU<span className="font-light">CONSENT</span></div>
                               <div className="status-badge-pill">
                                   <span className={`status-dot-pulse ${consent.status?.toLowerCase()}`}></span>
                                   <span className="status-label">{consent.status}</span>
@@ -1114,7 +1218,7 @@ const Dashboard = ({ setAuthenticated }) => {
                           {/* Chip Row - Contactless Only */}
                           <div className="card-chip-row">
                               <div className="contactless-symbol" style={{ marginLeft: 'auto' }}>
-                                  <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+                                  <svg viewBox="0 0 24 24" fill="none" width="32" height="32">
                                       <path d="M12 10.9c-.6.6-1.5.6-2.1 0-.6-.6-.6-1.5 0-2.1.6-.6 1.5-.6 2.1 0 .6.6.6 1.5 0 2.1z" fill="rgba(255,255,255,0.8)" />
                                       <path d="M14.8 13.7c1.4-1.4 1.4-3.7 0-5.1-.4-.4-.4-1 0-1.4.4-.4 1-.4 1.4 0 2.2 2.2 2.2 5.7 0 7.9-.4.4-1 .4-1.4 0-.4-.4-.4-1 0-1.4z" fill="rgba(255,255,255,0.6)" />
                                       <path d="M17.6 16.5c2.9-2.9 2.9-7.7 0-10.6-.4-.4-.4-1 0-1.4.4-.4 1-.4 1.4 0 3.7 3.7 3.7 9.6 0 13.4-.4.4-1 .4-1.4 0-.4-.4-.4-1 0-1.4z" fill="rgba(255,255,255,0.4)" />
@@ -1122,22 +1226,22 @@ const Dashboard = ({ setAuthenticated }) => {
                               </div>
                           </div>
                           
-                          <div className="card-number-large" style={{ fontSize: '1.4rem', margin: 'auto 0', letterSpacing: '2px' }}>{displayId}</div>
+                          <div className="card-number-large" style={{ fontSize: '1.75rem', margin: 'auto 0', letterSpacing: '3px', fontWeight: 600 }}>{displayId}</div>
 
                           <div className="card-bottom-row" style={{ marginTop: '0.5rem' }}>
-                            <div style={{ display: 'flex', gap: '2rem' }}>
+                            <div style={{ display: 'flex', gap: '2.5rem' }}>
                                 <div className="card-info-col">
-                                  <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem', marginBottom: '4px', display: 'block', letterSpacing: '1px' }}>CONSENT HOLDER</span>
-                                  <span className="card-value" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>{consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'UNKNOWN'}</span>
+                                  <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', marginBottom: '6px', display: 'block', letterSpacing: '1px' }}>CONSENT HOLDER</span>
+                                  <span className="card-value" style={{ color: '#fff', fontSize: '1rem', fontWeight: 600 }}>{consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'UNKNOWN'}</span>
                                 </div>
                                 <div className="card-info-col">
-                                  <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.65rem', marginBottom: '4px', display: 'block', letterSpacing: '1px' }}>CREATED</span>
-                                  <span className="card-value" style={{ color: '#fff', fontSize: '0.9rem', fontWeight: 600 }}>{new Date(consent.createdAt).toLocaleDateString()}</span>
+                                  <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', marginBottom: '6px', display: 'block', letterSpacing: '1px' }}>CREATED</span>
+                                  <span className="card-value" style={{ color: '#fff', fontSize: '1rem', fontWeight: 600 }}>{new Date(consent.createdAt).toLocaleDateString()}</span>
                                 </div>
                             </div>
                             <div className="card-logo-circles">
-                                <div className="circle red" style={{ width: '36px', height: '36px' }}></div>
-                                <div className="circle yellow" style={{ width: '36px', height: '36px' }}></div>
+                                <div className="circle red" style={{ width: '42px', height: '42px' }}></div>
+                                <div className="circle yellow" style={{ width: '42px', height: '42px' }}></div>
                             </div>
                           </div>
                         </div>
