@@ -1,71 +1,98 @@
-const CTA = () => {
-  return (
-    <section className="relative py-32 px-4 overflow-hidden">
-      {/* Background - Moving Beams & Fluctuating Lines */}
-      <div className="absolute inset-0 bg-linear-to-b from-[#050507] via-[#13131f] to-[#050507] overflow-hidden">
-        {/* Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] opacity-20"></div>
-        
-        {/* Horizontal Beams - Bigger and Brighter */}
-        <div className="absolute top-[15%] -left-[10%] w-[120%] h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-80 blur-[2px] animate-beam-horizontal shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ animationDuration: '7s' }}></div>
-        <div className="absolute top-[45%] -left-[10%] w-[120%] h-1.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-90 blur-[3px] animate-beam-horizontal shadow-[0_0_15px_rgba(34,211,238,0.6)]" style={{ animationDuration: '10s', animationDelay: '1s' }}></div>
-        <div className="absolute top-[75%] -left-[10%] w-[120%] h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-70 blur-[2px] animate-beam-horizontal shadow-[0_0_10px_rgba(236,72,153,0.5)]" style={{ animationDuration: '15s', animationDelay: '2s' }}></div>
+import React from 'react';
+import Reveal from './Reveal';
+import { BadgeDollarSign, BarChart3, ArrowRight } from 'lucide-react';
 
-        {/* Vertical Beams - Bigger and Brighter */}
-        <div className="absolute -top-[10%] left-[15%] w-1 h-[120%] bg-gradient-to-b from-transparent via-purple-400 to-transparent opacity-60 blur-[1px] animate-beam-vertical" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
-        <div className="absolute -top-[10%] left-[85%] w-1.5 h-[120%] bg-gradient-to-b from-transparent via-cyan-400 to-transparent opacity-70 blur-[2px] animate-beam-vertical" style={{ animationDuration: '12s', animationDelay: '3s' }}></div>
-        <div className="absolute -top-[10%] left-[50%] w-0.5 h-[120%] bg-gradient-to-b from-transparent via-indigo-500 to-transparent opacity-50 blur-[1px] animate-beam-vertical" style={{ animationDuration: '10s', animationDelay: '5s' }}></div>
-        
-        {/* Ambient Glows - Enhanced */}
-        <div className="absolute left-0 top-0 -z-10 h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[120px]"></div>
-        <div className="absolute right-0 bottom-0 -z-10 h-[500px] w-[500px] rounded-full bg-cyan-600/20 blur-[120px]"></div>
-      </div>
+const CTA = ({ theme }) => {
+  const isDark = theme === 'dark';
+  return (
+    <section className={`relative py-32 px-4 overflow-hidden ${isDark ? 'bg-[#050507]' : 'bg-[#fff]'}`}>
+      {/* Background - Clean gradient like the design */}
+      <div className={`absolute inset-0 bg-gradient-to-br transition-colors duration-300 pointer-events-none ${
+        isDark 
+          ? 'from-[#0a0a0f] via-[#050507] to-[#0a0a0f]' 
+          : 'from-blue-50/50 via-white to-purple-50/50'
+       }`}></div>
+
+       {/* Subtle Beam Lines matching the image structure */}
+       <div className={`absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden opacity-30`}>
+          <div className="absolute top-[20%] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
+          <div className="absolute top-[80%] left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-purple-200 to-transparent"></div>
+          <div className="absolute left-[50%] top-0 h-full w-[1px] bg-gradient-to-b from-transparent via-indigo-200 to-transparent"></div>
+       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* Holographic HUD Interface */}
-        <div className="relative py-24 px-6 md:px-12">
+        <Reveal className="relative py-24 px-6 md:px-16 text-center">
             
-            {/* Corner Accents - HUD Style */}
-            <div className="absolute top-0 left-0 w-24 h-24 border-t-2 border-l-2 border-purple-500/30 rounded-tl-3xl"></div>
-            <div className="absolute top-0 right-0 w-24 h-24 border-t-2 border-r-2 border-cyan-500/30 rounded-tr-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 border-b-2 border-l-2 border-cyan-500/30 rounded-bl-3xl"></div>
-            <div className="absolute bottom-0 right-0 w-24 h-24 border-b-2 border-r-2 border-purple-500/30 rounded-br-3xl"></div>
-
-            {/* Central Glow */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.1)_0%,transparent_70%)] blur-3xl -z-10"></div>
-
-            {/* Floating Icons/Elements */}
-            <div className="absolute top-10 left-10 animate-bounce delay-100 opacity-20 hidden md:block">
-               <svg className="w-12 h-12 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            {/* Corner Brackets exactly as in Design */}
+            
+            {/* Top Left */}
+            <div className="absolute top-0 left-0">
+               <div className="relative">
+                  <div className={`w-16 h-16 rounded-tl-[2rem] border-l-2 border-t-2 ${isDark ? 'border-blue-500/30' : 'border-blue-200'}`}></div>
+                  <div className="absolute top-6 left-6 animate-float">
+                     <div className={`w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm border ${
+                        isDark ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-white border-blue-100 text-blue-300'
+                     }`}>
+                        <BadgeDollarSign size={24} strokeWidth={1.5} />
+                     </div>
+                  </div>
+               </div>
             </div>
-            <div className="absolute bottom-10 right-10 animate-bounce delay-300 opacity-20 hidden md:block">
-               <svg className="w-12 h-12 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+
+            {/* Top Right */}
+            <div className="absolute top-0 right-0">
+                <div className={`w-16 h-16 rounded-tr-[2rem] border-r-2 border-t-2 ${isDark ? 'border-blue-500/30' : 'border-blue-200'}`}></div>
             </div>
 
-            <div className="text-center relative z-10">
-                <h2 className="text-4xl md:text-7xl font-bold text-white mb-8 tracking-tight">
-                  Ready to <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 via-pink-400 to-cyan-400">Master Your Money?</span>
+            {/* Bottom Left */}
+            <div className="absolute bottom-0 left-0">
+                <div className={`w-16 h-16 rounded-bl-[2rem] border-l-2 border-b-2 ${isDark ? 'border-blue-500/30' : 'border-cyan-200'}`}></div>
+            </div>
+
+            {/* Bottom Right */}
+            <div className="absolute bottom-0 right-0">
+               <div className="relative">
+                  <div className={`w-16 h-16 rounded-br-[2rem] border-r-2 border-b-2 ${isDark ? 'border-blue-500/30' : 'border-blue-200'}`}></div>
+                  <div className="absolute bottom-6 right-6 animate-float" style={{ animationDelay: '1.5s' }}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm border ${
+                          isDark ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-white border-blue-100 text-blue-300'
+                      }`}>
+                          <BarChart3 size={24} strokeWidth={1.5} />
+                      </div>
+                  </div>
+               </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="relative z-10 pt-8 pb-8">
+                <h2 className={`text-5xl md:text-7xl font-bold mb-8 tracking-tight ${isDark ? 'text-white' : 'text-[#0B0F19]'}`}>
+                  Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400">Master Your Money?</span>
                 </h2>
                 
-                <p className="text-gray-400 text-lg md:text-2xl max-w-3xl mx-auto mb-12 leading-relaxed">
+                <p className={`text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed ${isDark ? 'text-gray-400' : 'text-slate-500'}`}>
                   Join thousands of users who are already making smarter financial decisions with VittaManthan. No credit card required.
                 </p>
 
-                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                  <button className="group relative px-10 py-5 bg-white text-black rounded-full font-bold text-xl overflow-hidden transition-transform hover:scale-105 active:scale-95 shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)]">
-                    <span className="relative z-10 flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
+                  <button className={`group px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 ${
+                    isDark
+                      ? 'bg-white text-black hover:bg-gray-100'
+                      : 'bg-[#0f172a] text-white hover:bg-[#1e293b] shadow-xl shadow-slate-200'
+                  }`}>
                       Get Started Free
-                      <svg className="w-6 h-6 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-                    </span>
-                    <div className="absolute inset-0 bg-linear-to-r from-purple-200 via-cyan-200 to-purple-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </button>
                   
-                  <button className="px-10 py-5 rounded-full font-medium text-gray-300 hover:text-white border border-white/10 hover:border-white/30 hover:bg-white/5 transition-all text-lg">
+                  <button className={`px-8 py-4 rounded-full font-medium transition-all text-lg border ${
+                    isDark
+                      ? 'text-gray-300 hover:text-white border-white/10 hover:bg-white/5'
+                      : 'text-slate-600 hover:text-slate-900 border-slate-200 bg-white hover:border-slate-300'
+                  }`}>
                     Schedule a Demo
                   </button>
                 </div>
             </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

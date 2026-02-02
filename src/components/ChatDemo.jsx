@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import Reveal from './Reveal';
 
 const conversation = [
   { role: 'user', text: 'Analyze my spending trends for October.' },
@@ -9,7 +10,8 @@ const conversation = [
   { role: 'ai', text: 'Based on your current savings rate of ₹25,000/month, you will have ₹50,000 saved by December. This fits your "Goa Trip" budget.' },
 ];
 
-const ChatDemo = () => {
+const ChatDemo = ({ theme }) => {
+  const isDark = theme === 'dark';
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isAiTyping, setIsAiTyping] = useState(false);
@@ -76,34 +78,34 @@ const ChatDemo = () => {
   }, [messages, isAiTyping]);
 
   return (
-    <section id="demo" className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden group bg-[#050507]">
+    <section id="demo" className={`py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden group ${isDark ? 'bg-[#050507]' : 'bg-[#F8FAFC]'} transition-colors duration-300`}>
       {/* Cyber Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)] pointer-events-none"></div>
+      <div className={`absolute inset-0 bg-[linear-gradient(${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'}_1px,transparent_1px),linear-gradient(90deg,${isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'}_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)] pointer-events-none`}></div>
 
       {/* Ambient Glows */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-600/10 rounded-full blur-[100px] pointer-events-none animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className={`absolute top-0 left-1/4 w-96 h-96 ${isDark ? 'bg-blue-600/10' : 'bg-blue-600/5'} rounded-full blur-[100px] pointer-events-none animate-pulse`}></div>
+      <div className={`absolute bottom-0 right-1/4 w-96 h-96 ${isDark ? 'bg-cyan-600/10' : 'bg-cyan-600/5'} rounded-full blur-[100px] pointer-events-none animate-pulse`} style={{ animationDelay: '2s' }}></div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
           
           {/* Left Column: Command Stack (4 cols) */}
-          <div className="lg:col-span-5 flex flex-col">
+          <Reveal className="lg:col-span-5 flex flex-col">
             <div className="mb-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-cyan-400 mb-4">
+              <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${isDark ? 'bg-white/5 border-white/10' : 'bg-cyan-50 border-cyan-100'} border text-xs font-medium text-cyan-400 mb-4`}>
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
                 </span>
                 LIVE DEMO ACTIVE
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+              <h2 className={`text-4xl md:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-4 leading-tight`}>
                 Your Financial <br />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 via-pink-500 to-cyan-400">
                   Command Center
                 </span>
               </h2>
-              <p className="text-gray-400 text-lg">
+              <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-lg`}>
                 Experience the power of natural language processing. Ask complex financial questions and get instant, data-driven answers—just like chatting with a pro.
               </p>
             </div>
@@ -124,17 +126,17 @@ const ChatDemo = () => {
                       isActive 
                         ? 'bg-linear-to-r from-cyan-900/20 to-purple-900/20 border-cyan-500/50 shadow-[0_0_20px_rgba(6,182,212,0.15)] translate-x-2' 
                         : isPast
-                          ? 'bg-white/5 border-white/5 opacity-50 grayscale'
+                          ? (isDark ? 'bg-white/5 border-white/5' : 'bg-gray-50 border-gray-200') + ' opacity-50 grayscale'
                           : 'bg-transparent border-transparent opacity-40'
                     }`}
                   >
                     {/* Status Indicator Dot */}
                     <div className={`relative z-10 w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-500 ${
                       isActive 
-                        ? 'bg-[#0a0a0f] border-cyan-400 text-cyan-400 scale-110 shadow-[0_0_15px_rgba(6,182,212,0.4)]' 
+                        ? (isDark ? 'bg-[#0a0a0f]' : 'bg-white') + ' border-cyan-400 text-cyan-400 scale-110 shadow-[0_0_15px_rgba(6,182,212,0.4)]' 
                         : isPast
-                          ? 'bg-purple-900/20 border-purple-500/30 text-purple-400'
-                          : 'bg-white/5 border-white/10 text-gray-500'
+                          ? (isDark ? 'bg-purple-900/20 border-purple-500/30 text-purple-400' : 'bg-purple-50 border-purple-200 text-purple-400')
+                          : (isDark ? 'bg-white/5 border-white/10 text-gray-500' : 'bg-gray-100 border-gray-200 text-gray-400')
                     }`}>
                       {isActive ? (
                         <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -157,7 +159,7 @@ const ChatDemo = () => {
                         {isActive ? 'Processing...' : isPast ? 'Completed' : 'Pending'}
                       </div>
                       <span className={`font-medium transition-colors ${
-                        isActive ? 'text-white' : 'text-gray-400'
+                        isActive ? (isDark ? 'text-white' : 'text-gray-900') : (isDark ? 'text-gray-400' : 'text-gray-500')
                       }`}>
                         {q.text}
                       </span>
@@ -171,22 +173,22 @@ const ChatDemo = () => {
                 );
               })}
             </div>
-          </div>
+          </Reveal>
 
           {/* Right Column: Holographic Terminal (7 cols) */}
-          <div className="lg:col-span-7 relative mt-8 lg:mt-0">
+          <Reveal className="lg:col-span-7 relative mt-8 lg:mt-0" delay={200}>
             {/* Terminal Container */}
-            <div className="relative rounded-2xl bg-[#0a0a0f]/90 border border-white/10 backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/50 group-hover:shadow-purple-900/20 transition-shadow duration-500">
+            <div className={`relative rounded-2xl ${isDark ? 'bg-[#0a0a0f]/90 border-white/10' : 'bg-white/95 border-gray-200 shadow-2xl'} border backdrop-blur-xl overflow-hidden shadow-2xl shadow-black/50 group-hover:shadow-blue-900/20 transition-shadow duration-500`}>
               
               {/* Terminal Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-white/5">
+              <div className={`flex items-center justify-between px-6 py-4 border-b ${isDark ? 'border-white/5 bg-white/5' : 'border-gray-200 bg-gray-50'}`}>
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1.5">
                     <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
                     <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                     <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                   </div>
-                  <div className="ml-4 px-2 py-0.5 rounded bg-black/40 border border-white/10 text-[10px] font-mono text-gray-400">
+                  <div className={`ml-4 px-2 py-0.5 rounded ${isDark ? 'bg-black/40 border-white/10 text-gray-400' : 'bg-white border-gray-200 text-gray-500'} border text-[10px] font-mono`}>
                     BASH - v2.4.0
                   </div>
                 </div>
@@ -214,8 +216,8 @@ const ChatDemo = () => {
                       <div
                         className={`max-w-[85%] rounded-2xl px-5 py-4 ${
                           message.type === 'user'
-                            ? 'bg-linear-to-br from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/20 rounded-tr-sm'
-                            : 'bg-gray-800/50 text-gray-200 border border-white/5 rounded-tl-sm'
+                            ? 'bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 rounded-tr-sm'
+                            : (isDark ? 'bg-gray-800/50 text-gray-200 border-white/5' : 'bg-gray-100 text-gray-900 border-gray-200') + ' border rounded-tl-sm'
                         }`}
                       >
                         {message.type === 'ai' && (
@@ -236,7 +238,7 @@ const ChatDemo = () => {
                   {/* AI Typing Indicator */}
                   {isAiTyping && (
                     <div className="flex justify-start animate-fade-in-up">
-                      <div className="bg-gray-800/50 rounded-2xl rounded-tl-sm px-4 py-3 border border-white/5 flex items-center gap-1">
+                      <div className={`rounded-2xl rounded-tl-sm px-4 py-3 border flex items-center gap-1 ${isDark ? 'bg-gray-800/50 border-white/5' : 'bg-gray-100 border-gray-200'}`}>
                         <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                         <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                         <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
@@ -247,8 +249,8 @@ const ChatDemo = () => {
               </div>
               
               {/* Input Area */}
-              <div className="p-4 bg-[#050507] border-t border-white/5">
-                <div className="relative flex items-center bg-white/5 rounded-xl border border-white/10 px-4 py-3 focus-within:border-cyan-500/50 focus-within:bg-white/10 transition-all duration-300">
+              <div className={`p-4 ${isDark ? 'bg-[#050507] border-white/5' : 'bg-white border-gray-200'} border-t`}>
+                <div className={`relative flex items-center rounded-xl border px-4 py-3 transition-all duration-300 ${isDark ? 'bg-white/5 border-white/10 focus-within:bg-white/10' : 'bg-gray-50 border-gray-200 focus-within:bg-white focus-within:shadow-sm'} focus-within:border-cyan-500/50`}>
                   <div className="mr-3 text-gray-500">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -259,7 +261,7 @@ const ChatDemo = () => {
                     value={inputValue}
                     readOnly
                     placeholder="Waiting for input..."
-                    className="flex-1 bg-transparent border-none text-white placeholder-gray-500 focus:outline-none focus:ring-0 font-mono text-sm"
+                    className={`flex-1 bg-transparent border-none placeholder-gray-500 focus:outline-none focus:ring-0 font-mono text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}
                   />
                   <div className={`w-2 h-4 bg-cyan-400 ml-1 ${inputValue ? 'opacity-100 animate-pulse' : 'opacity-0'}`}></div>
                 </div>
@@ -268,9 +270,9 @@ const ChatDemo = () => {
             </div>
             
             {/* Decorative Elements behind terminal */}
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-linear-to-br from-purple-500/20 to-transparent blur-2xl -z-10"></div>
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-linear-to-tr from-cyan-500/20 to-transparent blur-2xl -z-10"></div>
-          </div>
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-transparent blur-2xl -z-10"></div>
+            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-gradient-to-tr from-cyan-500/20 to-transparent blur-2xl -z-10"></div>
+          </Reveal>
 
         </div>
       </div>
