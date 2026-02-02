@@ -86,19 +86,68 @@ const Dashboard = ({ setAuthenticated }) => {
   const pageSize = 12;
   const { transactions, allTransactions, loading, error, fetchTransactionsViaSession, total, paginate, rawResponse, notification, loadingMessage } = useTransactionsByConsentId();
   
-  const [activeConsents] = useState(() => {
+  // Get user-specific consents dynamically
+  const activeConsents = useMemo(() => {
     const saved = localStorage.getItem('setu_consents');
+    const userConsentIdsStr = localStorage.getItem('userConsentIds');
+    
+    let userConsentIds = [];
+    try {
+      userConsentIds = userConsentIdsStr ? JSON.parse(userConsentIdsStr) : [];
+    } catch (error) {
+      console.error("Error parsing userConsentIds:", error);
+    }
+    
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return parsed.filter(c => c.status === 'ACTIVE');
+        const activeConsentsList = parsed.filter(c => c.status === 'ACTIVE');
+        
+        // ALWAYS filter by user consent IDs - show nothing if user has no consents
+        if (userConsentIds.length > 0) {
+          return activeConsentsList.filter(c => userConsentIds.includes(c.id));
+        }
+        
+        // If no userConsentIds, show nothing (user hasn't created any consents)
+        return [];
       } catch (error) {
         console.error("Error parsing setu_consents:", error);
         return [];
       }
     }
     return [];
-  });
+  }, []);
+
+  // Cleanup effect: Remove consents that don't belong to current user
+  useEffect(() => {
+    const userConsentIdsStr = localStorage.getItem('userConsentIds');
+    let userConsentIds = [];
+    try {
+      userConsentIds = userConsentIdsStr ? JSON.parse(userConsentIdsStr) : [];
+    } catch (error) {
+      console.error("Error parsing userConsentIds:", error);
+    }
+
+    if (userConsentIds.length > 0) {
+      const saved = localStorage.getItem('setu_consents');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // Keep only consents that belong to current user
+          const filteredConsents = parsed.filter(c => userConsentIds.includes(c.id));
+          // Update localStorage with filtered consents only if different
+          if (JSON.stringify(parsed) !== JSON.stringify(filteredConsents)) {
+            localStorage.setItem('setu_consents', JSON.stringify(filteredConsents));
+          }
+        } catch (error) {
+          console.error("Error cleaning up consents:", error);
+        }
+      }
+    } else {
+      // If user has no consents, clear the setu_consents from localStorage
+      localStorage.setItem('setu_consents', JSON.stringify([]));
+    }
+  }, []);
 
   // Derived state for the currently selected consent object
   const currentConsent = useMemo(() => {
@@ -874,7 +923,51 @@ const Dashboard = ({ setAuthenticated }) => {
 
   // --- New Render Functions for the Design UI ---
 
-  const renderDashboardHome = () => (
+  const renderDashboardHome = () => {
+    // Check if user has no consents
+    if (activeConsents.length === 0) {
+      return (
+        <div className="dashboard-container-v2">
+          <div className="empty-state" style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            minHeight: '400px',
+            padding: '2rem'
+          }}>
+            <div className="empty-icon" style={{ fontSize: '4rem', marginBottom: '1rem' }}>📋</div>
+            <div className="empty-title" style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+              No User Consents Created
+            </div>
+            <div className="empty-subtitle" style={{ fontSize: '1rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+              Create a consent to start viewing your financial data and transactions.
+            </div>
+            <button 
+              onClick={() => setActiveSection("Consent")}
+              style={{
+                padding: '12px 24px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+              }}
+              onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
+            >
+              Go to Consent Management
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
+    return (
     <div className="dashboard-container-v2">
         <div className="dashboard-content-grid">
             {/* Main Column */}
@@ -1094,7 +1187,8 @@ const Dashboard = ({ setAuthenticated }) => {
             </div>
         </div>
     </div>
-  );
+    );
+  };
 
   const sectionInfo = {
     Dashboard: { title: "Dashboard", subtitle: "Overview of your financial activity" },

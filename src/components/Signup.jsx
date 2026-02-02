@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from 'axios';
+import { fetchUserConsents } from '../services/authService';
 
 // Simple SVG Icons
 const UserIcon = () => (
@@ -84,6 +85,24 @@ const Signup = ({ setAuthenticated }) => {
 
       if (data.firstName) localStorage.setItem("firstName", data.firstName);
       if (data.lastName) localStorage.setItem("lastName", data.lastName);
+      
+      // Fetch user-specific consent IDs
+      if (data.userId) {
+        try {
+          const userConsentsData = await fetchUserConsents(data.userId);
+          if (userConsentsData && userConsentsData.consentIds) {
+            // Store user consent IDs in localStorage
+            localStorage.setItem("userConsentIds", JSON.stringify(userConsentsData.consentIds));
+          } else {
+            // No consents for this user
+            localStorage.setItem("userConsentIds", JSON.stringify([]));
+          }
+        } catch (consentError) {
+          console.error("Error fetching user consents:", consentError);
+          // Set empty array if fetch fails
+          localStorage.setItem("userConsentIds", JSON.stringify([]));
+        }
+      }
       
       setAuthenticated(true);
       navigate("/dashboard");

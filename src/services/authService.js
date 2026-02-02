@@ -1,10 +1,22 @@
 // authService.js
 // Example service for authentication API calls
 import { apiFetch } from '../api';
+import axios from 'axios';
 
 export async function login(data) {
   return apiFetch('/auth/login', {
     method: 'POST',
     body: JSON.stringify(data),
   });
+}
+
+// Fetch user-specific consent IDs
+export async function fetchUserConsents(userId) {
+  try {
+    const response = await axios.get(`http://localhost:8086/api/auth/internal/user/${userId}/consents`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user consents:', error);
+    throw error;
+  }
 }

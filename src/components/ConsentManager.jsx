@@ -9,10 +9,33 @@ import '../styles/ConsentManager.css';
 const ConsentManager = () => {
   const { token, login, createConsent, getConsentStatus, loading, error: contextError, logout, clearError } = useSetu();
   
-  // Initialize consents from localStorage
+  // Initialize consents from localStorage and ALWAYS filter by user consent IDs
   const [consents, setConsents] = useState(() => {
     const saved = localStorage.getItem('setu_consents');
-    return saved ? JSON.parse(saved) : [];
+    const userConsentIdsStr = localStorage.getItem('userConsentIds');
+    
+    let userConsentIds = [];
+    try {
+      userConsentIds = userConsentIdsStr ? JSON.parse(userConsentIdsStr) : [];
+    } catch (error) {
+      console.error("Error parsing userConsentIds:", error);
+    }
+    
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // ALWAYS filter by user consent IDs - only show user's own consents
+        if (userConsentIds.length > 0) {
+          return parsed.filter(c => userConsentIds.includes(c.id));
+        }
+        // If no userConsentIds, return empty array (user has no consents)
+        return [];
+      } catch (error) {
+        console.error("Error parsing setu_consents:", error);
+        return [];
+      }
+    }
+    return [];
   });
 
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -145,7 +168,54 @@ const ConsentManager = () => {
   // Persist consents to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('setu_consents', JSON.stringify(consents));
+    
+    // Update userConsentIds to include all consent IDs from the user
+    const userConsentIdsStr = localStorage.getItem('userConsentIds');
+    let userConsentIds = [];
+    try {
+      userConsentIds = userConsentIdsStr ? JSON.parse(userConsentIdsStr) : [];
+    } catch (error) {
+      console.error("Error parsing userConsentIds:", error);
+    }
+    
+    // Add new consent IDs that aren't already in the list
+    const currentConsentIds = consents.map(c => c.id);
+    const updatedConsentIds = [...new Set([...userConsentIds, ...currentConsentIds])];
+    
+    // Only update if there's a change
+    if (JSON.stringify(updatedConsentIds.sort()) !== JSON.stringify(userConsentIds.sort())) {
+      localStorage.setItem('userConsentIds', JSON.stringify(updatedConsentIds));
+    }
   }, [consents]);
+
+  // Cleanup effect: Remove consents from localStorage that don't belong to current user
+  useEffect(() => {
+    const userConsentIdsStr = localStorage.getItem('userConsentIds');
+    let userConsentIds = [];
+    try {
+      userConsentIds = userConsentIdsStr ? JSON.parse(userConsentIdsStr) : [];
+    } catch (error) {
+      console.error("Error parsing userConsentIds:", error);
+    }
+
+    if (userConsentIds.length > 0) {
+      const saved = localStorage.getItem('setu_consents');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // Keep only consents that belong to current user
+          const filteredConsents = parsed.filter(c => userConsentIds.includes(c.id));
+          // Update localStorage with filtered consents
+          localStorage.setItem('setu_consents', JSON.stringify(filteredConsents));
+        } catch (error) {
+          console.error("Error cleaning up consents:", error);
+        }
+      }
+    } else {
+      // If user has no consents, clear the setu_consents from localStorage
+      localStorage.setItem('setu_consents', JSON.stringify([]));
+    }
+  }, []); // Run only on mount
 
   // Check for redirect params (success & id) to update status
   useEffect(() => {
