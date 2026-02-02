@@ -61,7 +61,7 @@ const AIResponseDisplay = ({ content, originalPrompt }) => {
             const pages = displayContent.pagination.total_pages;
             const promises = [];
             for (let i = 1; i <= pages; i++) {
-                promises.push(axios.post('http://localhost:9000/query/stream', {
+                promises.push(axios.post('http://localhost:9000/prompt', {
                     prompt: originalPrompt,
                     page: i
                 }));

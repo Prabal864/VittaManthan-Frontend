@@ -1,24 +1,69 @@
 @import 'tailwindcss';
+@import './styles/animations.css';
+
+@theme {
+  /* Override default purple with Blue/Slate palette for a basic look */
+  --color-purple-50: #eff6ff;
+  --color-purple-100: #dbeafe;
+  --color-purple-200: #bfdbfe;
+  --color-purple-300: #93c5fd;
+  --color-purple-400: #60a5fa;
+  --color-purple-500: #3b82f6;
+  --color-purple-600: #2563eb;
+  --color-purple-700: #1d4ed8;
+  --color-purple-800: #1e40af;
+  --color-purple-900: #1e3a8a;
+  --color-purple-950: #172554;
+}
 
 :root {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   
   /* Dark Mode Colors (Default) */
   --bg-root: #0a0a0e;
   --bg-sidebar: #0a0a0e;
-  --bg-card: #16161b; /* Slightly lighter than root */
+  --bg-card: #16161b;
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
   --primary-blue: #2563eb;
   --primary-blue-hover: #1d4ed8;
-  --accent-purple: #a855f7;
+  --accent-purple: #2563eb;
   --success-green: #22c55e;
   --danger-red: #ef4444;
   --border-color: rgba(255, 255, 255, 0.08);
   --hover-bg: rgba(255, 255, 255, 0.05);
-  
-  /* Transitions */
+
   --transition-speed: 0.3s;
+}
+
+/* Animations */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
 /* Light Mode Overrides */
@@ -26,10 +71,12 @@
   --bg-root: #f3f4f6;
   --bg-sidebar: #ffffff;
   --bg-card: #ffffff;
+  --bg-secondary: #f3f4f6;
   --text-primary: #111827;
   --text-secondary: #64748b;
   --border-color: #e2e8f0;
   --hover-bg: #f1f5f9;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 body {
@@ -70,13 +117,13 @@ body {
 .logo-icon-box {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #6366f1, #a855f7); /* Indigo to Purple */
+  background: linear-gradient(135deg, #3b82f6, #2563eb); /* Solid Blue Gradient */
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
 }
 
 .logo-text {
@@ -84,7 +131,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.8px;
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif; /* Ensure clean font */
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* Remove gradient text for cleaner look */
@@ -379,7 +426,7 @@ body {
 }
 
 .stat-icon.sales { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
-.stat-icon.experience { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+.stat-icon.experience { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
 .stat-icon.revenue { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
 
 .stat-info {
@@ -1035,5 +1082,15 @@ body {
 
 .user-profile {
   position: relative;
+}
+
+
+@keyframes wave-flow {
+  0% { transform: translateX(0) translateZ(0) scaleY(1); }
+  50% { transform: translateX(-25%) translateZ(0) scaleY(0.85); }
+  100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
+}
+.animate-wave {
+  animation: wave-flow 25s linear infinite;
 }
 

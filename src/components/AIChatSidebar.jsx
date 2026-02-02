@@ -44,7 +44,7 @@ const AIChatSidebar = ({ isOpen, onClose }) => {
 
         try {
             // Updated URL to match requirements
-            const response = await axios.post('http://localhost:9000/query/stream', {
+            const response = await axios.post('http://localhost:9000/prompt', {
                 prompt: userMsg.content
             });
 
