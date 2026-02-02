@@ -7,9 +7,9 @@ const GlowCurvedLine = ({ className = "", color = "purple" }) => {
 
   const colors = {
     purple: {
-      stop1: "#9333EA", // purple-600
-      stop2: "#E879F9", // fuchsia-400
-      stop3: "#9333EA"
+      stop1: "#7c3aed", // violet-600
+      stop2: "#a78bfa", // violet-400
+      stop3: "#7c3aed"
     },
     cyan: {
       stop1: "#0891B2", // cyan-600

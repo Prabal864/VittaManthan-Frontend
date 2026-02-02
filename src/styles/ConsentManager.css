@@ -19,7 +19,7 @@
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  background: linear-gradient(to right, #fff, #a5b4fc);
+  background: linear-gradient(to right, #fff, #93c5fd);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -36,13 +36,13 @@
   padding: 0.75rem 1.25rem;
   font-size: 0.9rem;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   transition: all 0.2s ease;
 }
 
 .create-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .create-btn .icon {
@@ -71,7 +71,7 @@
 .login-card h3 {
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+  background: linear-gradient(135deg, #fff 0%, #93c5fd 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -82,7 +82,7 @@
 }
 
 .login-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
   color: white;
   border: none;
   padding: 14px 32px;
@@ -94,14 +94,14 @@
   width: 100%;
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
   position: relative;
   overflow: hidden;
 }
 
 .login-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.6);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
   filter: brightness(1.1);
 }
 
@@ -1034,7 +1034,7 @@
 /* Ensure border light effect is visible in light mode */
 .dashboard-root.theme-light .consent-card::after,
 .dashboard-root.theme-light .account-card::before {
-  background: linear-gradient(to right, #c084fc, #ec4899, #22d3ee);
+  background: linear-gradient(to right, #3b82f6, #06b6d4, #22d3ee);
   opacity: 0;
 }
 
@@ -1069,8 +1069,8 @@
 }
 
 .summary-card.highlight {
-  background: linear-gradient(145deg, rgba(192, 132, 252, 0.05) 0%, rgba(34, 211, 238, 0.05) 100%);
-  border-color: rgba(192, 132, 252, 0.2);
+  background: linear-gradient(145deg, rgba(59, 130, 246, 0.05) 0%, rgba(34, 211, 238, 0.05) 100%);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
 .summary-label {
@@ -1116,13 +1116,13 @@
 }
 
 .count-badge {
-  background: rgba(192, 132, 252, 0.1);
-  color: #c084fc;
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
   padding: 0.2rem 0.6rem;
   border-radius: 12px;
   font-size: 0.8rem;
   font-weight: 600;
-  border: 1px solid rgba(192, 132, 252, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 /* Premium Credit Card Grid */
@@ -1164,7 +1164,7 @@
   inset: -1px;
   border-radius: 21px;
   padding: 1px;
-  background: linear-gradient(45deg, #c084fc, #ec4899, #22d3ee, #c084fc);
+  background: linear-gradient(45deg, #3b82f6, #06b6d4, #22d3ee, #3b82f6);
   background-size: 400% 400%;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;

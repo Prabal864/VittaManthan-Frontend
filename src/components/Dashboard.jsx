@@ -1,5 +1,9 @@
-import "../index.css";
 import React, { useMemo, useState, useEffect } from "react";
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import "../index.css";
 import { fetchTransactionsByConsentId } from "../api";
 import { useTransactionsByConsentId } from "../hooks/useTransactionsByConsentId";
 import { 
@@ -49,9 +53,14 @@ import {
   ChevronDown,
   Wallet,
   TrendingUp,
-  TrendingDown
+  TrendingDown,
+  Bot,
+  FileText,
+  FileSpreadsheet,
+  Table
 } from "lucide-react";
 import EditProfileModal from "./EditProfileModal";
+import AIChatPage from "./AIChatPage";
 import "../styles/DashboardRedesign.css";
 import "../styles/Transactions.css";
 import "../styles/TransactionsCarousel.css";
@@ -440,6 +449,73 @@ const Dashboard = ({ setAuthenticated }) => {
     return `${currencySymbol}${numeric.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
+  const exportToCSV = () => {
+      if (!allTransactions || allTransactions.length === 0) return;
+      
+      const headers = ["Date", "Description", "Type", "Category", "Amount", "Mode", "Reference"];
+      const rows = allTransactions.map(tx => [
+          tx.date || tx.timestamp || '',
+          `"${(tx.narration || tx.description || '').replace(/"/g, '""')}"`, // Escape quotes
+          tx.type || '',
+          tx.category || tx.mode || '',
+          tx.amount || '',
+          tx.mode || '',
+          tx.reference || ''
+      ]);
+      
+      const csvContent = [
+          headers.join(','),
+          ...rows.map(row => row.join(','))
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      saveAs(blob, 'all_transactions.csv');
+  };
+
+  const exportToExcel = () => {
+      if (!allTransactions || allTransactions.length === 0) return;
+      
+      const worksheet = XLSX.utils.json_to_sheet(allTransactions.map(tx => ({
+          Date: tx.date || tx.timestamp,
+          Description: tx.narration || tx.description,
+          Type: tx.type,
+          Category: tx.category || tx.mode,
+          Amount: tx.amount,
+          Mode: tx.mode,
+          Reference: tx.reference
+      })));
+      
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+      XLSX.writeFile(workbook, "all_transactions.xlsx");
+  };
+
+  const exportToPDF = () => {
+      if (!allTransactions || allTransactions.length === 0) return;
+      
+      const doc = new jsPDF();
+      doc.text("Transaction Report", 14, 15);
+      
+      const tableColumn = ["Date", "Description", "Type", "Category", "Amount"];
+      const tableRows = allTransactions.map(tx => [
+          tx.date || tx.timestamp || '-',
+          tx.narration || tx.description || '-',
+          tx.type || '-',
+          tx.category || tx.mode || '-',
+          formatCurrency(tx.amount, currencySymbol)
+      ]);
+      
+      autoTable(doc, {
+          head: [tableColumn],
+          body: tableRows,
+          startY: 20,
+          styles: { fontSize: 8 },
+          headStyles: { fillColor: [59, 130, 246] }
+      });
+      
+      doc.save("all_transactions.pdf");
+  };
+
   const renderPagination = () => {
     const totalPages = Math.ceil(total / pageSize);
     if (totalPages <= 1) return null;
@@ -647,7 +723,7 @@ const Dashboard = ({ setAuthenticated }) => {
                         tickLine={false}
                         tick={{fontSize: 12, fill: '#94a3b8'}}
                         dy={10}
-                        interval={graphTimeRange === 'Monthly' ? 4 : 0}
+                        minTickGap={30}
                       />
                       <YAxis 
                         axisLine={false}
@@ -1069,6 +1145,9 @@ const Dashboard = ({ setAuthenticated }) => {
             <li className={activeSection === "Consent" ? "active" : ""} onClick={() => setActiveSection("Consent")}>
               <span className="icon"><FileCheck size={20} /></span> {!isSidebarCollapsed && "Consent"}
             </li>
+            <li className={activeSection === "Chat" ? "active" : ""} onClick={() => setActiveSection("Chat")}>
+              <span className="icon"><Bot size={20} /></span> {!isSidebarCollapsed && "AI Assistant"}
+            </li>
           </ul>
         </nav>
 
@@ -1078,20 +1157,11 @@ const Dashboard = ({ setAuthenticated }) => {
             <li className={activeSection === "Settings" ? "active" : ""} onClick={() => setActiveSection("Settings")}>
               <span className="icon"><Settings size={20} /></span> {!isSidebarCollapsed && "Settings"}
             </li>
-            <li className={activeSection === "Appearances" ? "active" : ""} onClick={() => setActiveSection("Appearances")}>
-              <span className="icon"><Palette size={20} /></span> {!isSidebarCollapsed && "Appearances"}
-            </li>
-            <li className={activeSection === "Help" ? "active" : ""} onClick={() => setActiveSection("Help")}>
-              <span className="icon"><HelpCircle size={20} /></span> {!isSidebarCollapsed && "Help"}
+            <li onClick={handleLogout} className="logout-item">
+               <span className="icon"><LogOut size={20} /></span> {!isSidebarCollapsed && "Log Out"}
             </li>
           </ul>
         </nav>
-
-        <div className="sidebar-footer" style={{justifyContent: isSidebarCollapsed ? 'center' : 'flex-start'}}>
-          <button className="logout-link" onClick={handleLogout}>
-            <span className="icon"><LogOut size={20} /></span> {!isSidebarCollapsed && "Log Out"}
-          </button>
-        </div>
       </aside>
 
       <main className="dashboard-main">
@@ -1276,6 +1346,17 @@ const Dashboard = ({ setAuthenticated }) => {
                 )}
                 {!loading && !error && transactions.length > 0 && (
                   <>
+                    <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', gap: '8px', paddingRight: '4px'}}>
+                        <button onClick={exportToPDF} title="Export as PDF" style={{padding: '8px 12px', background: 'var(--bg-card)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500, transition: 'all 0.2s', boxShadow: 'var(--card-shadow, none)'}}>
+                            <FileText size={16} color="#3b82f6" /> PDF
+                        </button>
+                        <button onClick={exportToExcel} title="Export as Excel" style={{padding: '8px 12px', background: 'var(--bg-card)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500, transition: 'all 0.2s', boxShadow: 'var(--card-shadow, none)'}}>
+                            <FileSpreadsheet size={16} color="#22c55e" /> Excel
+                        </button>
+                        <button onClick={exportToCSV} title="Export as CSV" style={{padding: '8px 12px', background: 'var(--bg-card)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 500, transition: 'all 0.2s', boxShadow: 'var(--card-shadow, none)'}}>
+                            <Table size={16} color="#f59e0b" /> CSV
+                        </button>
+                    </div>
                     <div className="transactions-table-header">
                       <div className="th-item"><div className="custom-checkbox"></div></div>
                       <div className="th-item">TRANSACTION ID</div>
@@ -1383,6 +1464,8 @@ const Dashboard = ({ setAuthenticated }) => {
             <SetuProvider>
               <ConsentManager />
             </SetuProvider>
+          ) : activeSection === "Chat" ? (
+            <AIChatPage activeConsents={activeConsents} />
           ) : (
             renderDashboardHome()
           )}

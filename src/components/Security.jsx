@@ -1,137 +1,107 @@
-import GlowCurvedLine from './GlowCurvedLine';
+import React from 'react';
+import Reveal from './Reveal';
+import { Lock, CheckCircle, Landmark, Ban, ShieldCheck } from 'lucide-react';
 
-const Security = () => {
+const Security = ({ theme }) => {
+  const isDark = theme === 'dark';
   const features = [
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-        </svg>
-      ),
-      color: "text-orange-400",
-      gradient: "from-orange-500/20 to-red-500/20",
-      spotlight: "bg-orange-500/20",
-      border: "group-hover:border-orange-500/50",
-      wave: "from-orange-500 via-red-500 to-orange-500",
+      icon: <Lock className="w-8 h-8 text-orange-500" strokeWidth={1.5} />,
+      bg: isDark ? "bg-orange-900/20" : "bg-orange-50",
       title: "End-to-End Encryption",
       description: "Your data is encrypted at rest and in transit",
     },
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      color: "text-green-400",
-      gradient: "from-green-500/20 to-emerald-500/20",
-      spotlight: "bg-green-500/20",
-      border: "group-hover:border-green-500/50",
-      wave: "from-green-500 via-emerald-500 to-green-500",
+      icon: <CheckCircle className="w-8 h-8 text-emerald-500" strokeWidth={1.5} />,
+      bg: isDark ? "bg-emerald-900/20" : "bg-emerald-50",
       title: "Consent-Based Access",
       description: "You control what data is shared and for how long",
     },
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-        </svg>
-      ),
-      color: "text-blue-400",
-      gradient: "from-blue-500/20 to-indigo-500/20",
-      spotlight: "bg-blue-500/20",
-      border: "group-hover:border-blue-500/50",
-      wave: "from-blue-500 via-indigo-500 to-blue-500",
+      icon: <Landmark className="w-8 h-8 text-blue-500" strokeWidth={1.5} />,
+      bg: isDark ? "bg-blue-900/20" : "bg-blue-50",
       title: "RBI Approved",
       description: "Built on the official Account Aggregator framework",
     },
     {
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-        </svg>
-      ),
-      color: "text-red-400",
-      gradient: "from-red-500/20 to-pink-500/20",
-      spotlight: "bg-red-500/20",
-      border: "group-hover:border-red-500/50",
-      wave: "from-red-500 via-pink-500 to-red-500",
+      icon: <Ban className="w-8 h-8 text-red-500" strokeWidth={1.5} />,
+      bg: isDark ? "bg-red-900/20" : "bg-red-50",
       title: "No Data Storage",
       description: "We never store your raw financial data",
     },
   ];
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden group">
-      {/* Stronger Background Gradient */}
-      <div className="absolute inset-0 bg-linear-to-b from-[#0a0a0f] via-purple-900/10 to-[#0a0a0f] pointer-events-none"></div>
-
-      {/* Large Glow Orbs */}
-      <div className="absolute top-1/4 -left-64 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 -right-64 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-
-      {/* Background Glow Line with Fluctuation */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-5xl opacity-40 pointer-events-none">
-         <div className="absolute inset-0 animate-wave-pulse">
-            <GlowCurvedLine className="absolute top-0 left-0 h-[120%] w-48 -translate-x-1/2 rotate-45 opacity-60" color="purple" />
-            <GlowCurvedLine className="absolute top-0 right-0 h-[120%] w-48 translate-x-1/2 -rotate-45 opacity-60" color="cyan" />
-         </div>
+    <section className={`py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#0f1014]' : 'bg-[#eef2ff]'}`}>
+      
+      {/* Background Decor - Extremely subtle beams matching original design */}
+      <div className="absolute inset-0 pointer-events-none">
+          <div className={`absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent ${isDark ? 'via-white/5' : 'via-blue-200/40'} to-transparent`}></div>
+          <div className={`absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent ${isDark ? 'via-white/5' : 'via-blue-200/40'} to-transparent`}></div>
+          
+          {/* Soft diagonal faint glow */}
+          <div className={`absolute -bottom-1/4 -left-20 w-[600px] h-[600px] rounded-full blur-[120px] opacity-30 ${isDark ? 'bg-purple-900/20' : 'bg-purple-200/40'}`}></div>
+          <div className={`absolute -top-1/4 -right-20 w-[600px] h-[600px] rounded-full blur-[120px] opacity-30 ${isDark ? 'bg-blue-900/20' : 'bg-blue-200/40'}`}></div>
       </div>
 
-      {/* Vertical Beams */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-purple-500/50 to-transparent animate-beam-vertical" style={{ animationDelay: '0s' }}></div>
-        <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-cyan-500/50 to-transparent animate-beam-vertical" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-transparent via-purple-400/30 to-transparent animate-beam-vertical" style={{ animationDelay: '4s' }}></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-sm font-medium mb-6 hover:bg-purple-500/20 transition-colors cursor-default">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            Bank-Grade Security
-          </div>
+      <div className="max-w-6xl mx-auto relative z-10">
+        
+        {/* Header Section */}
+        <div className="text-center mb-16 space-y-6">
+          <Reveal>
+            <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-4 transition-colors ${
+              isDark 
+                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' 
+                : 'bg-blue-50 text-blue-600 border border-blue-100'
+            }`}>
+              <ShieldCheck className="w-4 h-4" />
+              Bank-Grade Security
+            </div>
+          </Reveal>
           
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Your Data, <span className="bg-linear-to-r from-purple-500 via-pink-500 to-cyan-400 bg-clip-text text-transparent">Your Control</span>
-          </h2>
+          <Reveal delay={100}>
+            <h2 className={`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              Your Data, <span className="bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500 bg-clip-text text-transparent">Your Control</span>
+            </h2>
+          </Reveal>
           
-          <p className="text-gray-400 text-lg max-w-3xl mx-auto">
-            Built on the RBI-approved Account Aggregator framework. All data access is 
-            consent-based, time-bound, and fully encrypted.
-          </p>
+          <Reveal delay={200}>
+            <p className={`text-lg md:text-xl max-w-3xl mx-auto leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              Built on the RBI-approved Account Aggregator framework. All data access is 
+              consent-based, time-bound, and fully encrypted.
+            </p>
+          </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {features.map((feature, index) => (
-            <div 
-              key={index}
-              className="group/card relative p-px rounded-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
-            >
-              {/* Animated Gradient Border - The "Wave" */}
-              <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-purple-600 via-cyan-500 to-purple-600 opacity-0 group-hover/card:opacity-100 group-active/card:opacity-100 animate-border-wave transition-opacity duration-500"></div>
-              
-              {/* Glow effect */}
-              <div className="absolute inset-0 bg-linear-to-r from-purple-500/20 via-cyan-500/20 to-purple-500/20 opacity-0 group-hover/card:opacity-100 group-active/card:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
-
-              <div className="relative h-full p-8 rounded-2xl bg-linear-to-br from-purple-900/20 via-[#0a0a0f]/80 to-red-900/20 backdrop-blur-sm border border-white/5 group-hover/card:border-transparent group-active/card:border-transparent transition-colors z-10 overflow-hidden">
-                
-                <div className="relative z-10 flex flex-col items-center text-center">
-                  <div className={`mb-6 p-4 rounded-2xl border border-white/5 bg-white/5 group-hover/card:border-white/10 group-hover/card:bg-white/10 group-active/card:border-white/10 group-active/card:bg-white/10 transition-all duration-300 ${feature.color} shadow-lg shadow-black/50`}>
+            <Reveal key={index} delay={index * 100 + 300}>
+              <div className={`h-full group p-8 md:p-12 rounded-3xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 relative overflow-hidden ${
+                isDark 
+                  ? 'bg-[#18181b] border border-white/5 hover:border-white/10' 
+                  : 'bg-white border border-slate-100 shadow-xl shadow-slate-200/50 hover:shadow-blue-500/10'
+              }`}>
+                <div className="flex flex-col items-center text-center space-y-6">
+                  {/* Icon Container with soft background */}
+                  <div className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-transform duration-500 group-hover:scale-110 ${feature.bg}`}>
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-white group-hover/card:text-transparent group-hover/card:bg-clip-text group-hover/card:bg-linear-to-r group-hover/card:from-purple-400 group-hover/card:to-cyan-400 group-active/card:text-transparent group-active/card:bg-clip-text group-active/card:bg-linear-to-r group-active/card:from-purple-400 group-active/card:to-cyan-400 transition-all duration-300">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-400 group-hover/card:text-gray-300 group-active/card:text-gray-300 transition-colors">
-                    {feature.description}
-                  </p>
+                  
+                  <div className="space-y-3">
+                    <h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      {feature.title}
+                    </h3>
+                    <p className={`text-base leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
+
       </div>
     </section>
   );

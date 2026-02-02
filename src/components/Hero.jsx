@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Reveal from './Reveal';
 
-const Hero = () => {
+const Hero = ({ theme = 'dark' }) => {
+  const isDark = theme === 'dark';
   const [activeTab, setActiveTab] = useState('Analytics');
   const [chatInput, setChatInput] = useState('');
   const [messages, setMessages] = useState([
@@ -87,17 +89,17 @@ const Hero = () => {
           <div className="animate-fade-in">
             <div className="flex justify-between items-center mb-6">
               <div>
-                <h2 className="text-xl font-bold text-white">Good Morning, Alex</h2>
-                <p className="text-gray-400 text-xs">Here's what's happening with your money today.</p>
+                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Good Morning, Alex</h2>
+                <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'} text-xs`}>Here's what's happening with your money today.</p>
               </div>
-              <button className="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors">
+              <button className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors">
                 + Add Transaction
               </button>
             </div>
 
             {/* Net Worth Card */}
-            <div className="bg-linear-to-r from-purple-900/40 to-blue-900/40 border border-white/10 rounded-lg p-5 mb-5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+            <div className={`bg-linear-to-r from-gray-900 to-gray-800 border ${isDark ? 'border-white/10' : 'border-gray-200'} rounded-lg p-5 mb-5 relative overflow-hidden`}>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <div className="relative z-10">
                 <div className="text-gray-400 text-xs mb-1">Total Net Worth</div>
                 <div className="text-3xl font-bold text-white mb-3">₹24,52,000</div>
@@ -118,23 +120,23 @@ const Hero = () => {
                 { label: 'Expenses', val: '₹42,593', color: 'text-red-400', bg: 'bg-red-500/10' },
                 { label: 'Savings', val: '₹77,407', color: 'text-blue-400', bg: 'bg-blue-500/10' }
               ].map((stat, i) => (
-                <div key={i} className="bg-[#0a0a0f] border border-white/5 rounded-md p-3">
-                  <div className="text-gray-400 text-[10px] mb-1">{stat.label}</div>
+                <div key={i} className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-md p-3`}>
+                  <div className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-[10px] mb-1`}>{stat.label}</div>
                   <div className={`text-lg font-bold ${stat.color}`}>{stat.val}</div>
                 </div>
               ))}
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-[#0a0a0f] border border-white/5 rounded-lg p-5">
-              <h3 className="text-white font-semibold text-sm mb-3">Recent Activity</h3>
+            <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-lg p-5`}>
+              <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm mb-3`}>Recent Activity</h3>
               <div className="space-y-3">
                 {[
                   { title: 'Received from Client', time: '2 hours ago', amount: '+₹45,000', type: 'income' },
                   { title: 'Apple Store', time: '5 hours ago', amount: '-₹12,400', type: 'expense' },
                   { title: 'Starbucks', time: 'Yesterday', amount: '-₹450', type: 'expense' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                  <div key={i} className={`flex items-center justify-between border-b ${isDark ? 'border-white/5' : 'border-gray-100'} pb-3 last:border-0 last:pb-0`}>
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${item.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -145,11 +147,11 @@ const Hero = () => {
                         </svg>
                       </div>
                       <div>
-                        <div className="text-white font-medium text-xs">{item.title}</div>
+                        <div className={`${isDark ? 'text-white' : 'text-gray-900'} font-medium text-xs`}>{item.title}</div>
                         <div className="text-gray-500 text-[10px]">{item.time}</div>
                       </div>
                     </div>
-                    <div className={`font-bold text-xs ${item.type === 'income' ? 'text-green-400' : 'text-white'}`}>{item.amount}</div>
+                    <div className={`font-bold text-xs ${item.type === 'income' ? 'text-green-400' : (isDark ? 'text-white' : 'text-gray-900')}`}>{item.amount}</div>
                   </div>
                 ))}
               </div>
@@ -161,16 +163,16 @@ const Hero = () => {
         return (
           <div className="animate-fade-in h-full flex flex-col">
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-xl font-bold text-white">Transactions</h2>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Transactions</h2>
               <div className="flex gap-2">
-                <button className="bg-[#1c1c2e] text-white px-3 py-1 rounded-md text-[10px] border border-white/10">Export CSV</button>
-                <button className="bg-[#1c1c2e] text-white px-3 py-1 rounded-md text-[10px] border border-white/10">Filter</button>
+                <button className={`bg-[#1c1c2e] ${isDark ? 'text-white border-white/10' : 'text-gray-600 bg-gray-100 border-gray-200'} px-3 py-1 rounded-md text-[10px] border`}>Export CSV</button>
+                <button className={`bg-[#1c1c2e] ${isDark ? 'text-white border-white/10' : 'text-gray-600 bg-gray-100 border-gray-200'} px-3 py-1 rounded-md text-[10px] border`}>Filter</button>
               </div>
             </div>
 
             {/* Search Bar */}
             <div className="relative mb-5">
-              <input type="text" placeholder="Search..." className="w-full bg-[#0a0a0f] border border-white/10 rounded-lg py-2 px-9 text-xs text-white focus:outline-none focus:border-purple-500 transition-colors" />
+              <input type="text" placeholder="Search..." className={`w-full ${isDark ? 'bg-[#0a0a0f] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'} border rounded-lg py-2 px-9 text-xs focus:outline-none focus:border-blue-500 transition-colors`} />
               <svg className="w-3.5 h-3.5 text-gray-500 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
 
@@ -183,18 +185,18 @@ const Hero = () => {
                 { name: 'Uber', cat: 'Transport', date: 'Nov 29, 2025', amount: '-₹340', status: 'Completed', icon: 'U', color: 'bg-black' },
                 { name: 'Zomato', cat: 'Food', date: 'Nov 28, 2025', amount: '-₹850', status: 'Completed', icon: 'Z', color: 'bg-red-500' },
                 { name: 'Electricity Bill', cat: 'Utilities', date: 'Nov 25, 2025', amount: '-₹1,200', status: 'Completed', icon: 'E', color: 'bg-blue-500' },
-                { name: 'SIP Investment', cat: 'Investment', date: 'Nov 20, 2025', amount: '-₹10,000', status: 'Auto-Debit', icon: 'I', color: 'bg-purple-500' },
+                { name: 'SIP Investment', cat: 'Investment', date: 'Nov 20, 2025', amount: '-₹10,000', status: 'Auto-Debit', icon: 'I', color: 'bg-blue-600' },
               ].map((tx, i) => (
-                <div key={i} className="bg-[#0a0a0f] border border-white/5 rounded-md p-3 flex items-center justify-between hover:bg-white/5 transition-colors cursor-pointer group">
+                <div key={i} className={`${isDark ? 'bg-[#0a0a0f] border-white/5 hover:bg-white/5' : 'bg-white border-gray-100 hover:bg-gray-50 shadow-sm'} border rounded-md p-3 flex items-center justify-between transition-colors cursor-pointer group`}>
                   <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-full ${tx.color} flex items-center justify-center text-white font-bold text-[10px]`}>{tx.icon}</div>
                     <div>
-                      <div className="text-white font-medium text-xs group-hover:text-purple-400 transition-colors">{tx.name}</div>
+                      <div className={`${isDark ? 'text-white' : 'text-gray-900'} font-medium text-xs group-hover:text-blue-500 transition-colors`}>{tx.name}</div>
                       <div className="text-gray-500 text-[10px]">{tx.cat} • {tx.date}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className={`font-bold text-xs ${tx.amount.startsWith('+') ? 'text-green-400' : 'text-white'}`}>{tx.amount}</div>
+                    <div className={`font-bold text-xs ${tx.amount.startsWith('+') ? 'text-green-400' : (isDark ? 'text-white' : 'text-gray-900')}`}>{tx.amount}</div>
                     <div className="text-[10px] text-gray-500">{tx.status}</div>
                   </div>
                 </div>
@@ -206,21 +208,21 @@ const Hero = () => {
       case 'Budgeting':
         return (
           <div className="animate-fade-in">
-            <h2 className="text-xl font-bold text-white mb-5">Monthly Budget</h2>
+            <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-5`}>Monthly Budget</h2>
             
             {/* Overview Cards */}
             <div className="flex gap-3 mb-6 overflow-x-auto pb-2">
-              <div className="min-w-[180px] bg-linear-to-br from-purple-900/20 to-purple-600/20 border border-purple-500/30 rounded-lg p-4">
-                <div className="text-purple-300 text-xs mb-1">Total Budget</div>
-                <div className="text-xl font-bold text-white">₹60,000</div>
+              <div className="min-w-[180px] bg-linear-to-br from-blue-900/20 to-blue-600/20 border border-blue-500/30 rounded-lg p-4">
+                <div className={`${isDark ? 'text-blue-300' : 'text-blue-700'} text-xs mb-1`}>Total Budget</div>
+                <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>₹60,000</div>
               </div>
               <div className="min-w-[180px] bg-linear-to-br from-pink-900/20 to-pink-600/20 border border-pink-500/30 rounded-lg p-4">
-                <div className="text-pink-300 text-xs mb-1">Spent So Far</div>
-                <div className="text-xl font-bold text-white">₹42,593</div>
+                <div className={`${isDark ? 'text-pink-300' : 'text-pink-700'} text-xs mb-1`}>Spent So Far</div>
+                <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>₹42,593</div>
               </div>
               <div className="min-w-[180px] bg-linear-to-br from-green-900/20 to-green-600/20 border border-green-500/30 rounded-lg p-4">
-                <div className="text-green-300 text-xs mb-1">Remaining</div>
-                <div className="text-xl font-bold text-white">₹17,407</div>
+                <div className={`${isDark ? 'text-green-300' : 'text-green-700'} text-xs mb-1`}>Remaining</div>
+                <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>₹17,407</div>
               </div>
             </div>
 
@@ -234,18 +236,18 @@ const Hero = () => {
               ].map((cat, i) => {
                 const pct = (cat.spent / cat.limit) * 100;
                 return (
-                  <div key={i} className="bg-[#0a0a0f] border border-white/5 rounded-md p-4">
+                  <div key={i} className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-md p-4`}>
                     <div className="flex justify-between items-end mb-2">
                       <div>
-                        <div className="text-white font-medium text-sm mb-0.5">{cat.name}</div>
+                        <div className={`${isDark ? 'text-white' : 'text-gray-900'} font-medium text-sm mb-0.5`}>{cat.name}</div>
                         <div className="text-[10px] text-gray-400">₹{cat.spent} of ₹{cat.limit}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-white font-bold text-sm">{Math.round(pct)}%</div>
+                        <div className={`${isDark ? 'text-white' : 'text-gray-900'} font-bold text-sm`}>{Math.round(pct)}%</div>
                         <div className="text-[10px] text-gray-500">used</div>
                       </div>
                     </div>
-                    <div className="h-2 bg-[#1c1c2e] rounded-full overflow-hidden">
+                    <div className={`h-2 ${isDark ? 'bg-[#1c1c2e]' : 'bg-gray-100'} rounded-full overflow-hidden`}>
                       <div className={`h-full rounded-full ${cat.color} transition-all duration-1000`} style={{ width: `${pct}%` }}></div>
                     </div>
                   </div>
@@ -259,14 +261,14 @@ const Hero = () => {
         return (
           <div className="animate-fade-in">
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-xl font-bold text-white">Portfolio</h2>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Portfolio</h2>
               <span className="text-green-400 text-xs font-medium bg-green-500/10 px-2 py-0.5 rounded-full">+18.4% All Time</span>
             </div>
 
             {/* Portfolio Value */}
-            <div className="bg-[#0a0a0f] border border-white/5 rounded-lg p-5 mb-5">
+            <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-lg p-5 mb-5`}>
               <div className="text-gray-400 text-xs mb-1">Current Value</div>
-              <div className="text-3xl font-bold text-white mb-4">₹12,45,890</div>
+              <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-4`}>₹12,45,890</div>
               
               {/* Mock Line Chart Area */}
               <div className="h-32 w-full relative flex items-end gap-1">
@@ -280,22 +282,22 @@ const Hero = () => {
 
             {/* Asset Allocation */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-               <div className="bg-[#0a0a0f] border border-white/5 rounded-lg p-5">
-                  <h3 className="text-white font-semibold text-sm mb-4">Asset Allocation</h3>
+               <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-lg p-5`}>
+                  <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm mb-4`}>Asset Allocation</h3>
                   <div className="space-y-3">
                      {[
-                        { name: 'Indian Stocks', pct: 45, val: '₹5.6L', color: 'bg-blue-500' },
-                        { name: 'Mutual Funds', pct: 30, val: '₹3.7L', color: 'bg-purple-500' },
+                        { name: 'Indian Stocks', pct: 45, val: '₹5.6L', color: 'bg-blue-600' },
+                        { name: 'Mutual Funds', pct: 30, val: '₹3.7L', color: 'bg-indigo-500' },
                         { name: 'Gold / SGB', pct: 15, val: '₹1.8L', color: 'bg-yellow-500' },
                         { name: 'Crypto', pct: 10, val: '₹1.2L', color: 'bg-pink-500' },
                      ].map((asset, i) => (
                         <div key={i} className="flex items-center justify-between">
                            <div className="flex items-center gap-2">
                               <div className={`w-2.5 h-2.5 rounded-full ${asset.color}`}></div>
-                              <span className="text-gray-300 text-xs">{asset.name}</span>
+                              <span className={`${isDark ? 'text-gray-300' : 'text-gray-700'} text-xs`}>{asset.name}</span>
                            </div>
                            <div className="text-right">
-                              <div className="text-white text-xs font-medium">{asset.pct}%</div>
+                              <div className={`${isDark ? 'text-white' : 'text-gray-900'} text-xs font-medium`}>{asset.pct}%</div>
                               <div className="text-gray-500 text-[10px]">{asset.val}</div>
                            </div>
                         </div>
@@ -303,8 +305,8 @@ const Hero = () => {
                   </div>
                </div>
                
-               <div className="bg-[#0a0a0f] border border-white/5 rounded-lg p-5">
-                  <h3 className="text-white font-semibold text-sm mb-4">Top Performers</h3>
+               <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-lg p-5`}>
+                  <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm mb-4`}>Top Performers</h3>
                   <div className="space-y-3">
                      {[
                         { name: 'Reliance Ind.', change: '+4.2%', price: '₹2,450' },
@@ -312,8 +314,8 @@ const Hero = () => {
                         { name: 'Tata Motors', change: '+3.5%', price: '₹680' },
                         { name: 'Bitcoin', change: '+5.1%', price: '$42,000' },
                      ].map((stock, i) => (
-                        <div key={i} className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0">
-                           <span className="text-white text-xs font-medium">{stock.name}</span>
+                        <div key={i} className={`flex items-center justify-between border-b ${isDark ? 'border-white/5' : 'border-gray-100'} pb-2 last:border-0 last:pb-0`}>
+                           <span className={`${isDark ? 'text-white' : 'text-gray-900'} text-xs font-medium`}>{stock.name}</span>
                            <div className="text-right">
                               <div className="text-green-400 text-xs font-bold">{stock.change}</div>
                               <div className="text-gray-500 text-[10px]">{stock.price}</div>
@@ -331,17 +333,17 @@ const Hero = () => {
           <div className="animate-fade-in h-full flex flex-col">
                {/* Header */}
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                  <h2 className="text-xl font-bold text-white">Financial Analytics</h2>
+                  <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Financial Analytics</h2>
                   <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                     <div className="bg-[#13131f] border border-white/5 rounded-md px-3 py-1.5 flex items-center gap-2 text-xs text-gray-400">
+                     <div className={`${isDark ? 'bg-[#13131f] border-white/5 text-gray-400' : 'bg-white border-gray-200 text-gray-600 shadow-sm'} border rounded-md px-3 py-1.5 flex items-center gap-2 text-xs`}>
                         <span>This Month</span>
                         <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                      </div>
                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gray-800 border border-white/10 flex items-center justify-center">
+                        <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-800 border-white/10' : 'bg-gray-100 border-gray-200'} border flex items-center justify-center`}>
                             <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-linear-to-r from-purple-500 to-pink-500 p-[1.5px]">
+                        <div className="w-8 h-8 rounded-full bg-linear-to-r from-blue-500 to-indigo-500 p-[1.5px]">
                             <img src="https://i.pravatar.cc/150?img=32" alt="User" className="w-full h-full rounded-full border-2 border-[#050507]" />
                         </div>
                      </div>
@@ -352,14 +354,14 @@ const Hero = () => {
                <div className="grid grid-cols-12 gap-5 h-full">
                   
                   {/* Main Chart Card (Big Left) */}
-                  <div className="col-span-12 lg:col-span-8 bg-[#0a0a0f] border border-white/5 rounded-xl p-5 relative overflow-hidden group min-h-[280px]">
+                  <div className={`col-span-12 lg:col-span-8 ${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-xl p-5 relative overflow-hidden group min-h-[280px]`}>
                      {/* Ambient Glow */}
-                     <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-purple-900/10 to-transparent pointer-events-none"></div>
+                     {isDark && <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-blue-900/10 to-transparent pointer-events-none"></div>}
                      
                      <div className="flex flex-col sm:flex-row justify-between items-start mb-6 relative z-10 gap-4">
                         <div>
-                           <h3 className="text-gray-400 text-xs font-medium mb-1">Total Spend</h3>
-                           <div className="text-3xl font-bold text-white mb-1">₹42,593</div>
+                           <h3 className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-xs font-medium mb-1`}>Total Spend</h3>
+                           <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-1`}>₹42,593</div>
                            <div className="flex items-center gap-2">
                               <span className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded-full">+12.5%</span>
                               <span className="text-gray-500 text-[10px]">vs last month</span>
@@ -367,7 +369,7 @@ const Hero = () => {
                         </div>
                         <div className="flex gap-1">
                            {['Expenses', 'Income', 'Savings'].map(tab => (
-                              <button key={tab} className={`px-3 py-1 rounded-md text-[10px] font-medium transition-colors ${tab === 'Expenses' ? 'bg-[#1c1c2e] text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+                              <button key={tab} className={`px-3 py-1 rounded-md text-[10px] font-medium transition-colors ${tab === 'Expenses' ? (isDark ? 'bg-[#1c1c2e] text-white' : 'bg-gray-100 text-gray-900') : 'text-gray-500 hover:text-gray-300'}`}>
                                  {tab}
                               </button>
                            ))}
@@ -380,11 +382,11 @@ const Hero = () => {
                            <div key={i} className="w-full flex flex-col justify-end group/bar h-full relative">
                               {/* The Bar */}
                               <div 
-                                 className={`w-full rounded-t-sm transition-all duration-500 relative ${i === 10 ? 'bg-linear-to-t from-purple-600 to-pink-500 shadow-[0_0_20px_rgba(236,72,153,0.5)]' : 'bg-[#1c1c2e] hover:bg-[#2a2a3d]'}`}
+                                 className={`w-full rounded-t-sm transition-all duration-500 relative ${i === 10 ? 'bg-linear-to-t from-blue-600 to-indigo-500 shadow-[0_0_20px_rgba(59,130,246,0.5)]' : (isDark ? 'bg-[#1c1c2e] hover:bg-[#2a2a3d]' : 'bg-gray-200 hover:bg-gray-300')}`}
                                  style={{ height: `${h}%` }}
                               >
                                  {/* Tooltip */}
-                                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#1c1c2e] text-white text-[10px] py-0.5 px-1.5 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap border border-white/10 z-20">
+                                 <div className={`absolute -top-8 left-1/2 -translate-x-1/2 ${isDark ? 'bg-[#1c1c2e] text-white border-white/10' : 'bg-white text-gray-900 border-gray-200 shadow-md'} text-[10px] py-0.5 px-1.5 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap border z-20`}>
                                     ₹{h * 1000}
                                  </div>
                               </div>
@@ -400,20 +402,20 @@ const Hero = () => {
                   <div className="col-span-12 lg:col-span-4 flex flex-col gap-5">
                      
                      {/* Spending Categories */}
-                     <div className="bg-[#0a0a0f] border border-white/5 rounded-xl p-5 flex-1 min-h-[180px]">
-                        <h3 className="text-white font-semibold text-sm mb-4">Top Categories</h3>
+                     <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-xl p-5 flex-1 min-h-[180px]`}>
+                        <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm mb-4`}>Top Categories</h3>
                         <div className="space-y-4">
                            {[
-                              { name: 'Food & Dining', amount: '₹12,400', pct: 80, color: 'bg-purple-500' },
+                              { name: 'Food & Dining', amount: '₹12,400', pct: 80, color: 'bg-blue-600' },
                               { name: 'Transportation', amount: '₹8,200', pct: 60, color: 'bg-cyan-500' },
-                              { name: 'Entertainment', amount: '₹4,500', pct: 45, color: 'bg-pink-500' },
+                              { name: 'Entertainment', amount: '₹4,500', pct: 45, color: 'bg-indigo-500' },
                            ].map((cat, i) => (
                               <div key={i}>
                                  <div className="flex justify-between text-xs mb-1.5">
-                                    <span className="text-gray-300">{cat.name}</span>
+                                    <span className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{cat.name}</span>
                                     <span className="text-gray-400">{cat.amount}</span>
                                  </div>
-                                 <div className="h-1.5 bg-[#1c1c2e] rounded-full overflow-hidden">
+                                 <div className={`h-1.5 ${isDark ? 'bg-[#1c1c2e]' : 'bg-gray-100'} rounded-full overflow-hidden`}>
                                     <div className={`h-full rounded-full ${cat.color}`} style={{ width: `${cat.pct}%` }}></div>
                                  </div>
                               </div>
@@ -422,33 +424,33 @@ const Hero = () => {
                      </div>
                            
                      {/* Budget Status (Donut) */}
-                     <div className="bg-[#0a0a0f] border border-white/5 rounded-xl p-5 flex-1 flex items-center justify-between min-h-[140px]">
+                     <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-xl p-5 flex-1 flex items-center justify-between min-h-[140px]`}>
                         <div>
-                           <h3 className="text-white font-semibold text-sm mb-1">Budget Status</h3>
-                           <div className="text-xl font-bold text-white">72%</div>
+                           <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm mb-1`}>Budget Status</h3>
+                           <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>72%</div>
                            <p className="text-[10px] text-gray-500">of monthly limit used</p>
                         </div>
                         <div className="relative w-20 h-20 flex items-center justify-center">
                            <svg className="w-full h-full transform -rotate-90">
-                              <circle cx="40" cy="40" r="32" stroke="#1c1c2e" strokeWidth="6" fill="none" />
+                              <circle cx="40" cy="40" r="32" stroke={isDark ? '#1c1c2e' : '#e5e7eb'} strokeWidth="6" fill="none" />
                               <circle cx="40" cy="40" r="32" stroke="url(#gradient)" strokeWidth="6" fill="none" strokeDasharray="201" strokeDashoffset="56" strokeLinecap="round" />
                               <defs>
                                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" stopColor="#a855f7" />
-                                    <stop offset="100%" stopColor="#ec4899" />
+                                    <stop offset="0%" stopColor="#3b82f6" />
+                                    <stop offset="100%" stopColor="#2563eb" />
                                  </linearGradient>
                               </defs>
                            </svg>
-                           <div className="absolute text-[10px] font-bold text-white">Safe</div>
+                           <div className={`absolute text-[10px] font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Safe</div>
                         </div>
                      </div>
                   </div>
 
                   {/* Bottom Row - Recent Transactions */}
-                  <div className="col-span-12 lg:col-span-6 bg-[#0a0a0f] border border-white/5 rounded-xl p-5 min-h-[220px]">
+                  <div className={`col-span-12 lg:col-span-6 ${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-xl p-5 min-h-[220px]`}>
                      <div className="flex justify-between items-center mb-5">
-                        <h3 className="text-white font-semibold text-sm">Recent Transactions</h3>
-                        <button className="text-[10px] text-purple-400 hover:text-purple-300">View All</button>
+                        <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm`}>Recent Transactions</h3>
+                        <button className="text-[10px] text-blue-500 hover:text-blue-400">View All</button>
                      </div>
                      <div className="space-y-3">
                         {[
@@ -462,11 +464,11 @@ const Hero = () => {
                                     {tx.icon}
                                  </div>
                                  <div>
-                                    <div className="text-xs text-white font-medium group-hover:text-purple-400 transition-colors">{tx.name}</div>
+                                    <div className={`text-xs ${isDark ? 'text-white' : 'text-gray-900'} font-medium group-hover:text-blue-500 transition-colors`}>{tx.name}</div>
                                     <div className="text-[10px] text-gray-500">{tx.date}</div>
                                  </div>
                               </div>
-                              <div className={`text-xs font-medium ${tx.amount.startsWith('+') ? 'text-green-400' : 'text-white'}`}>
+                              <div className={`text-xs font-medium ${tx.amount.startsWith('+') ? 'text-green-400' : (isDark ? 'text-white' : 'text-gray-900')}`}>
                                  {tx.amount}
                               </div>
                            </div>
@@ -475,9 +477,9 @@ const Hero = () => {
                   </div>
 
                   {/* Bottom Row - Recurring */}
-                  <div className="col-span-12 lg:col-span-6 bg-[#0a0a0f] border border-white/5 rounded-xl p-5 min-h-[220px]">
+                  <div className={`col-span-12 lg:col-span-6 ${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-xl p-5 min-h-[220px]`}>
                      <div className="flex justify-between items-center mb-5">
-                        <h3 className="text-white font-semibold text-sm">Recurring Payments</h3>
+                        <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm`}>Recurring Payments</h3>
                         <span className="text-[10px] text-gray-500">Next 7 Days</span>
                      </div>
                      <div className="space-y-4">
@@ -489,14 +491,14 @@ const Hero = () => {
                            <div key={i}>
                               <div className="flex justify-between items-center mb-1.5">
                                  <div className="flex items-center gap-2">
-                                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
-                                    <span className="text-xs text-gray-300">{item.name}</span>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                    <span className={`text-xs ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{item.name}</span>
                                  </div>
-                                 <span className="text-xs text-white font-medium">{item.amount}</span>
+                                 <span className={`text-xs ${isDark ? 'text-white' : 'text-gray-900'} font-medium`}>{item.amount}</span>
                               </div>
                               <div className="flex items-center gap-3">
-                                 <div className="flex-1 h-1 bg-[#1c1c2e] rounded-full overflow-hidden">
-                                    <div className="h-full bg-linear-to-r from-purple-500 to-pink-500 rounded-full" style={{ width: `${item.progress}%` }}></div>
+                                 <div className={`flex-1 h-1 ${isDark ? 'bg-[#1c1c2e]' : 'bg-gray-100'} rounded-full overflow-hidden`}>
+                                    <div className="h-full bg-blue-600 rounded-full" style={{ width: `${item.progress}%` }}></div>
                                  </div>
                                  <span className="text-[10px] text-gray-500 w-16 text-right">{item.due}</span>
                               </div>
@@ -514,8 +516,8 @@ const Hero = () => {
           <div className="animate-fade-in h-full flex flex-col">
             <div className="flex justify-between items-center mb-5">
               <div>
-                <h2 className="text-xl font-bold text-white">Anomaly Detection</h2>
-                <p className="text-gray-400 text-xs">AI-powered fraud and irregularity monitoring</p>
+                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Anomaly Detection</h2>
+                <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-xs`}>AI-powered fraud and irregularity monitoring</p>
               </div>
               <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-2 py-1 rounded-full">
                 <span className="relative flex h-1.5 w-1.5">
@@ -534,11 +536,11 @@ const Hero = () => {
                     <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-white mb-1">Unusual Spending Pattern Detected</h3>
-                    <p className="text-gray-300 text-xs mb-3">We noticed a transaction of <span className="text-white font-bold">₹24,999</span> at <span className="text-white font-bold">Electronics Store</span> that deviates from your typical spending behavior on weekdays.</p>
+                    <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'} mb-1`}>Unusual Spending Pattern Detected</h3>
+                    <p className={`${isDark ? 'text-gray-300' : 'text-gray-700'} text-xs mb-3`}>We noticed a transaction of <span className={`${isDark ? 'text-white' : 'text-gray-900'} font-bold`}>₹24,999</span> at <span className={`${isDark ? 'text-white' : 'text-gray-900'} font-bold`}>Electronics Store</span> that deviates from your typical spending behavior on weekdays.</p>
                     <div className="flex gap-3">
                       <button className="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors shadow-lg shadow-red-900/20">Block Transaction</button>
-                      <button className="bg-[#1c1c2e] hover:bg-[#2a2a3d] text-white border border-white/10 px-3 py-1.5 rounded-md text-xs font-medium transition-colors">It was me</button>
+                      <button className={`bg-[#1c1c2e] hover:bg-[#2a2a3d] ${isDark ? 'text-white border-white/10' : 'text-gray-300 border-white/10'} px-3 py-1.5 rounded-md text-xs font-medium transition-colors border`}>It was me</button>
                     </div>
                   </div>
                </div>
@@ -547,22 +549,22 @@ const Hero = () => {
             {/* Recent Anomalies List */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* List */}
-              <div className="bg-[#0a0a0f] border border-white/5 rounded-lg p-5">
-                <h3 className="text-white font-semibold text-sm mb-3">Recent Alerts</h3>
+              <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-lg p-5`}>
+                <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm mb-3`}>Recent Alerts</h3>
                 <div className="space-y-3">
                   {[
                     { title: 'Duplicate Charge', desc: 'Netflix Subscription charged twice', time: '2 hours ago', severity: 'medium', color: 'text-orange-400', bg: 'bg-orange-500/10' },
                     { title: 'New Device Login', desc: 'Login attempt from Mumbai, IN', time: '5 hours ago', severity: 'low', color: 'text-blue-400', bg: 'bg-blue-500/10' },
                     { title: 'Subscription Price Hike', desc: 'Adobe Creative Cloud increased by 15%', time: 'Yesterday', severity: 'low', color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
                   ].map((alert, i) => (
-                    <div key={i} className="flex items-start gap-3 p-2.5 rounded-md hover:bg-white/5 transition-colors cursor-pointer">
+                    <div key={i} className={`flex items-start gap-3 p-2.5 rounded-md ${isDark ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors cursor-pointer`}>
                       <div className={`w-1.5 h-1.5 mt-1.5 rounded-full ${alert.severity === 'high' ? 'bg-red-500' : alert.severity === 'medium' ? 'bg-orange-500' : 'bg-blue-500'}`}></div>
                       <div className="flex-1">
                         <div className="flex justify-between items-start">
-                          <h4 className="text-white text-xs font-medium">{alert.title}</h4>
+                          <h4 className={`${isDark ? 'text-white' : 'text-gray-900'} text-xs font-medium`}>{alert.title}</h4>
                           <span className="text-[10px] text-gray-500">{alert.time}</span>
                         </div>
-                        <p className="text-gray-400 text-[10px] mt-0.5">{alert.desc}</p>
+                        <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-[10px] mt-0.5`}>{alert.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -570,29 +572,29 @@ const Hero = () => {
               </div>
 
               {/* AI Analysis / Radar Chart Placeholder */}
-              <div className="bg-[#0a0a0f] border border-white/5 rounded-lg p-5 flex flex-col">
-                 <h3 className="text-white font-semibold text-sm mb-3">Risk Analysis</h3>
+              <div className={`${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-sm'} border rounded-lg p-5 flex flex-col`}>
+                 <h3 className={`${isDark ? 'text-white' : 'text-gray-900'} font-semibold text-sm mb-3`}>Risk Analysis</h3>
                  <div className="flex-1 flex items-center justify-center relative">
                     {/* Mock Radar/Spider Chart Visual */}
                     <div className="relative w-40 h-40">
-                       <div className="absolute inset-0 border border-white/10 rounded-full"></div>
-                       <div className="absolute inset-8 border border-white/10 rounded-full"></div>
-                       <div className="absolute inset-14 border border-white/10 rounded-full"></div>
+                       <div className={`absolute inset-0 border ${isDark ? 'border-white/10' : 'border-gray-200'} rounded-full`}></div>
+                       <div className={`absolute inset-8 border ${isDark ? 'border-white/10' : 'border-gray-200'} rounded-full`}></div>
+                       <div className={`absolute inset-14 border ${isDark ? 'border-white/10' : 'border-gray-200'} rounded-full`}></div>
                        {/* Lines */}
-                       <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/10"></div>
-                       <div className="absolute left-0 right-0 top-1/2 h-px bg-white/10"></div>
-                       <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/10 rotate-45"></div>
-                       <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white/10 -rotate-45"></div>
+                       <div className={`absolute top-0 bottom-0 left-1/2 w-px ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}></div>
+                       <div className={`absolute left-0 right-0 top-1/2 h-px ${isDark ? 'bg-white/10' : 'bg-gray-200'}`}></div>
+                       <div className={`absolute top-0 bottom-0 left-1/2 w-px ${isDark ? 'bg-white/10' : 'bg-gray-200'} rotate-45`}></div>
+                       <div className={`absolute top-0 bottom-0 left-1/2 w-px ${isDark ? 'bg-white/10' : 'bg-gray-200'} -rotate-45`}></div>
                        
                        {/* The Shape */}
                        <svg className="absolute inset-0 w-full h-full overflow-visible">
-                          <polygon points="80,10 140,50 130,120 76,150 20,110 30,40" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" strokeWidth="1.5" />
-                          <circle cx="80" cy="10" r="2" fill="#a855f7" />
-                          <circle cx="140" cy="50" r="2" fill="#a855f7" />
-                          <circle cx="130" cy="120" r="2" fill="#a855f7" />
-                          <circle cx="76" cy="150" r="2" fill="#a855f7" />
-                          <circle cx="20" cy="110" r="2" fill="#a855f7" />
-                          <circle cx="30" cy="40" r="2" fill="#a855f7" />
+                          <polygon points="80,10 140,50 130,120 76,150 20,110 30,40" fill="rgba(59, 130, 246, 0.2)" stroke="#3b82f6" strokeWidth="1.5" />
+                          <circle cx="80" cy="10" r="2" fill="#3b82f6" />
+                          <circle cx="140" cy="50" r="2" fill="#3b82f6" />
+                          <circle cx="130" cy="120" r="2" fill="#3b82f6" />
+                          <circle cx="76" cy="150" r="2" fill="#3b82f6" />
+                          <circle cx="20" cy="110" r="2" fill="#3b82f6" />
+                          <circle cx="30" cy="40" r="2" fill="#3b82f6" />
                        </svg>
                     </div>
                  </div>
@@ -611,8 +613,8 @@ const Hero = () => {
           <div className="animate-fade-in h-full flex flex-col">
             <div className="flex justify-between items-center mb-5">
               <div>
-                <h2 className="text-xl font-bold text-white">AI Assistant</h2>
-                <p className="text-gray-400 text-xs">Ask questions about your finances</p>
+                <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>AI Assistant</h2>
+                <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-xs`}>Ask questions about your finances</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -623,30 +625,30 @@ const Hero = () => {
             {/* Chat Area */}
             <div 
               ref={chatContainerRef}
-              className="flex-1 bg-[#0a0a0f] border border-white/5 rounded-xl p-5 mb-4 overflow-y-auto flex flex-col gap-5 relative scroll-smooth"
+              className={`flex-1 ${isDark ? 'bg-[#0a0a0f] border-white/5' : 'bg-white border-gray-100 shadow-inner'} border rounded-xl p-5 mb-4 overflow-y-auto flex flex-col gap-5 relative scroll-smooth`}
             >
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex items-end gap-3 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`}>
                   {/* Bot Avatar */}
                   {msg.sender === 'bot' && (
-                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-lg shadow-purple-500/20">
+                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/20">
                       <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                     </div>
                   )}
 
                   <div className={`max-w-[75%] rounded-2xl px-5 py-3.5 shadow-md ${
                     msg.sender === 'user' 
-                      ? 'bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-br-none' 
-                      : 'bg-[#1c1c2e] text-gray-200 border border-white/10 rounded-bl-none'
+                      ? 'bg-blue-600 text-white rounded-br-none' 
+                      : (isDark ? 'bg-[#1c1c2e] text-gray-200 border border-white/10' : 'bg-gray-100 text-gray-900 border border-gray-200') + ' rounded-bl-none'
                   }`}>
                     <p className="text-sm leading-relaxed font-medium">{msg.text}</p>
-                    <p className={`text-[10px] mt-1.5 ${msg.sender === 'user' ? 'text-purple-200' : 'text-gray-500'}`}>{msg.time}</p>
+                    <p className={`text-[10px] mt-1.5 ${msg.sender === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>{msg.time}</p>
                   </div>
 
                   {/* User Avatar */}
                   {msg.sender === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-gray-700 border border-white/10 flex items-center justify-center shrink-0">
-                      <svg className="w-4 h-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    <div className={`w-8 h-8 rounded-full ${isDark ? 'bg-gray-700 border-white/10' : 'bg-gray-200 border-gray-300'} border flex items-center justify-center shrink-0`}>
+                      <svg className={`w-4 h-4 ${isDark ? 'text-gray-300' : 'text-gray-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                     </div>
                   )}
                 </div>
@@ -660,12 +662,12 @@ const Hero = () => {
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Type your message..." 
-                className="w-full bg-[#0a0a0f] border border-white/10 rounded-xl py-3.5 pl-5 pr-14 text-sm text-white focus:outline-none focus:border-purple-500 transition-all shadow-inner" 
+                className={`w-full ${isDark ? 'bg-[#0a0a0f] border-white/10 text-white' : 'bg-white border-gray-200 text-gray-900 shadow-sm'} border rounded-xl py-3.5 pl-5 pr-14 text-sm focus:outline-none focus:border-blue-500 transition-all shadow-inner`} 
               />
               <button 
                 type="submit"
                 disabled={!chatInput.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-linear-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-500/20"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-blue-600 hover:opacity-90 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -676,68 +678,71 @@ const Hero = () => {
         );
 
       default:
-        return <div className="text-white p-10 text-center">Coming Soon</div>;
+        return <div className={`${isDark ? 'text-white' : 'text-gray-900'} p-10 text-center`}>Coming Soon</div>;
     }
   };
 
   return (
-    <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Moving Beams Background */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Beam 1 - Purple */}
-        <div className="absolute top-[15%] -left-[20%] w-[60%] h-1.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-70 blur-sm animate-beam-horizontal" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
-        <div className="absolute top-[15%] -left-[20%] w-[30%] h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-90 blur-md animate-beam-horizontal" style={{ animationDuration: '8s', animationDelay: '0s' }}></div>
-
-        {/* Beam 2 - Cyan */}
-        <div className="absolute top-[45%] -left-[20%] w-[70%] h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-60 blur-sm animate-beam-horizontal" style={{ animationDuration: '12s', animationDelay: '2s' }}></div>
-        
-        {/* Beam 3 - Mixed */}
-        <div className="absolute top-[75%] -left-[20%] w-[60%] h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60 blur-sm animate-beam-horizontal" style={{ animationDuration: '15s', animationDelay: '5s' }}></div>
-        
-        {/* Beam 4 - Fast small one */}
-        <div className="absolute top-[30%] -left-[10%] w-[20%] h-0.5 bg-gradient-to-r from-transparent via-white to-transparent opacity-80 blur-[1px] animate-beam-horizontal" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
+    <section className="relative pt-32 pb-40 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-screen flex flex-col justify-center bg-slate-50">
+      
+      {/* Background Ambience - Subtle Gradients */}
+      <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+         <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-pink-100/40 blur-[130px] rounded-full mix-blend-multiply opacity-70 animate-pulse" style={{animationDuration: '8s'}}></div>
+         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-100/50 blur-[120px] rounded-full mix-blend-multiply opacity-60"></div>
+         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-purple-100/30 blur-[150px] rounded-full mix-blend-multiply opacity-50"></div>
       </div>
 
       <div className="max-w-7xl mx-auto text-center relative z-10">
-        <div className="mb-8">
-          <span className="inline-block px-5 py-2 bg-[#13131f] border border-purple-500/30 rounded-full text-purple-300 text-sm font-medium backdrop-blur-sm shadow-[0_0_15px_rgba(168,85,247,0.15)]">
-            Powered by Setu Account Aggregator + AI
+        <div className="mb-8 flex justify-center">
+          <span className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium border backdrop-blur-md transition-all bg-white/60 border-gray-200 text-gray-600 hover:bg-white/80`}>
+            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
+            Powered by Setu AA + AI
           </span>
         </div>
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
-          <span className="text-white">Meet your </span>
-          <span className="bg-gradient-to-r from-[#a259ff] via-[#ff6bcb] to-[#00cfff] bg-clip-text text-transparent">
-            finance copilot
+        
+        <h1 className="text-6xl sm:text-7xl lg:text-[7rem] font-black mb-10 tracking-tight leading-[0.9] text-center text-slate-900 relative">
+          <span className="relative block">Meet your</span>
+          <span className="relative block pb-4">
+              <span className="absolute -inset-1 rounded-3xl bg-linear-to-r from-pink-500/20 via-purple-500/20 to-indigo-500/20 blur-2xl block skew-y-3 opacity-50"></span>
+              <span className="relative bg-linear-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                finance copilot
+              </span>
           </span>
         </h1>
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-10 leading-relaxed">
-          Turn raw financial data into clear, actionable insights. Consent-based access, 
-          visualization-ready transactions, and natural-language Q&A—all in one platform.
+        
+        <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
+          Turn raw financial data into <span className="font-semibold text-slate-800">clear, actionable insights.</span> Access regulated transaction data, visualize spending, and chat with your money.
         </p>
-        <div className="flex flex-col sm:flex-row gap-5 justify-center">
-          <button className="bg-gradient-to-r from-[#a259ff] to-[#00cfff] text-white px-8 py-3.5 rounded-lg font-bold text-lg hover:opacity-90 transition-all shadow-[0_0_20px_rgba(162,89,255,0.3)] transform hover:-translate-y-0.5">
-            Get Started
+
+        <div className="flex flex-col sm:flex-row gap-5 justify-center items-center w-full max-w-lg mx-auto relative z-20">
+          <button className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg bg-slate-900 text-white shadow-[0_10px_30px_rgba(15,23,42,0.2)] hover:shadow-[0_20px_40px_rgba(15,23,42,0.3)] hover:-translate-y-1 transition-all flex items-center justify-center gap-2 group">
+            Get Started Free
+            <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
           </button>
-          <button className="bg-transparent border border-gray-700 text-white px-8 py-3.5 rounded-lg font-semibold text-lg hover:bg-white/5 hover:border-gray-500 transition-all backdrop-blur-sm">
+          
+          <button className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg bg-white border border-slate-200 text-slate-700 hover:border-pink-200 hover:bg-pink-50/50 shadow-sm hover:shadow-lg transition-all flex items-center justify-center gap-3 group">
+             <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <svg className="w-4 h-4 text-pink-600 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+             </div>
             Watch Demo
           </button>
         </div>
 
         {/* Dashboard Preview - Expanded & Complex */}
-        <div className="mt-20 relative mx-auto max-w-7xl perspective-1000">
-          {/* Glow Effects behind dashboard */}
-          <div className="absolute -inset-1 bg-linear-to-r from-purple-600 via-pink-500 to-cyan-500 rounded-[32px] blur opacity-30 animate-pulse"></div>
+        <Reveal className="mt-24 relative mx-auto max-w-7xl perspective-1000">
+          {/* Subtle Ambient Glow behind dashboard */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] rounded-[30px] blur-[80px] -z-10 bg-purple-500/20"></div>
           
-          <div className="relative bg-[#050507] border border-white/10 rounded-xl overflow-hidden shadow-xl text-left transform transition-transform duration-700 hover:scale-[1.01] flex flex-col md:flex-row h-auto md:h-[800px]">
+          <div className="relative bg-white border-gray-200 shadow-2xl border rounded-2xl overflow-hidden text-left transform transition-transform duration-700 hover:scale-[1.01] flex flex-col md:flex-row h-auto md:h-[800px]">
             
             {/* Sidebar */}
-            <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-white/5 flex flex-col py-6 md:py-8 bg-[#0a0a0f]">
+            <div className="w-full md:w-64 border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50 flex flex-col py-6 md:py-8">
                {/* Logo Area */}
                <div className="px-6 md:px-8 mb-6 md:mb-10 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-linear-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg bg-pink-600 flex items-center justify-center">
                     <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                   </div>
-                  <span className="text-xl font-bold text-white">LiveRecon</span>
+                  <span className="text-xl font-bold text-gray-900">LiveRecon</span>
                </div>
 
                {/* Nav Items */}
@@ -756,11 +761,11 @@ const Hero = () => {
                         onClick={() => setActiveTab(item.id)}
                         className={`flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer transition-all whitespace-nowrap ${
                            activeTab === item.id 
-                           ? 'bg-[#1c1c2e] text-white border border-white/10 shadow-sm' 
-                           : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                           ? 'bg-white text-gray-900 border border-gray-200 shadow-sm'
+                           : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                         }`}
                      >
-                        <svg className={`w-4 h-4 shrink-0 ${activeTab === item.id ? 'text-purple-400' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className={`w-4 h-4 shrink-0 ${activeTab === item.id ? 'text-pink-500' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             {item.icon}
                         </svg>
                         <span className="text-sm font-medium">{item.id}</span>
@@ -770,7 +775,7 @@ const Hero = () => {
 
                {/* Bottom Settings */}
                <div className="mt-auto px-4 hidden md:block">
-                  <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer text-gray-400 hover:bg-white/5 hover:text-white transition-colors">
+                  <div className={`flex items-center gap-3 px-4 py-2.5 rounded-lg cursor-pointer transition-colors text-gray-500 hover:bg-gray-100 hover:text-gray-900`}>
                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                      <span className="text-sm font-medium">Settings</span>
                   </div>
@@ -778,15 +783,12 @@ const Hero = () => {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 bg-[#050507] p-5 md:p-6 overflow-y-auto md:overflow-hidden flex flex-col">
+            <div className={`flex-1 bg-white p-5 md:p-6 overflow-y-auto md:overflow-hidden flex flex-col`}>
                {renderContent()}
             </div>
           </div>
-        </div>
+        </Reveal>
         
-        {/* Decorative gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDuration: '4s' }}></div>
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
       </div>
     </section>
   );

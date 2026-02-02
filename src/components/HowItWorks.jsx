@@ -1,122 +1,272 @@
-import GlowCurvedLine from './GlowCurvedLine';
+import React, { useState, useEffect } from 'react';
+import { Link2, Database, BrainCircuit, MessageSquareText, ShieldCheck, CheckCircle2, Building2, Loader2 } from 'lucide-react';
+import Reveal from './Reveal';
 
-const HowItWorks = () => {
+const PhoneScreen = ({ isDark }) => {
+  const [currentStage, setCurrentStage] = useState(0);
+
+  // Cycle through animation stages
+  useEffect(() => {
+    const intervals = [2000, 2000, 2000, 3000]; // Durations for each stage
+    
+    const nextStage = () => {
+      setCurrentStage((prev) => (prev + 1) % 4);
+    };
+
+    const timer = setTimeout(nextStage, intervals[currentStage]);
+    return () => clearTimeout(timer);
+  }, [currentStage]);
+
+  return (
+    <div className={`w-full h-full rounded-[2.5rem] overflow-hidden flex flex-col relative ${isDark ? 'bg-slate-900' : 'bg-slate-50'}`}>
+      
+      {/* Fake Status Bar */}
+      <div className="h-8 w-full flex justify-between items-center px-6 pt-2 z-20">
+        <div className="text-[10px] font-semibold">9:41</div>
+        <div className="flex gap-1.5">
+          <div className="w-4 h-2.5 bg-current rounded-sm opacity-80"></div>
+          <div className="w-2.5 h-2.5 bg-current rounded-full opacity-80"></div>
+        </div>
+      </div>
+
+      {/* Screen Content Transition Group */}
+      <div className="flex-1 relative p-6 flex flex-col items-center">
+        
+        {/* STAGE 0: CONNECT */}
+        <div className={`absolute inset-0 p-6 flex flex-col items-center transition-all duration-500 ease-in-out transform ${currentStage === 0 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 pointer-events-none'}`}>
+             <div className="w-full text-left mb-6 mt-4">
+                <h4 className="text-xl font-bold mb-1">Select Bank</h4>
+                <p className="text-xs text-gray-500">Choose primary account</p>
+             </div>
+             
+             {['HDFC Bank', 'ICICI Bank', 'SBI'].map((bank, i) => (
+               <div key={bank} className="w-full bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-3 flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${i===0 ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'}`}>
+                        <Building2 size={16} />
+                    </div>
+                    <span className="font-medium text-sm text-slate-700">{bank}</span>
+                 </div>
+                 <div className={`w-4 h-4 rounded-full border ${i === 1 ? 'bg-blue-500 border-blue-500' : 'border-slate-300'}`}></div>
+               </div>
+             ))}
+             
+             <div className="mt-auto w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm text-center shadow-lg shadow-blue-200">
+                Connect Account
+             </div>
+        </div>
+
+        {/* STAGE 1: VERIFYING */}
+        <div className={`absolute inset-0 p-6 flex flex-col items-center justify-center transition-all duration-500 ease-in-out transform ${currentStage === 1 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 pointer-events-none'}`}>
+            <div className="relative mb-6">
+                <div className="absolute inset-0 bg-blue-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                <div className="relative w-20 h-20 bg-white rounded-2xl shadow-xl flex items-center justify-center text-blue-600">
+                    <ShieldCheck size={40} />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white border-2 border-white shadow-lg">
+                    <Loader2 size={16} className="animate-spin" />
+                </div>
+            </div>
+            <h4 className="text-lg font-bold mb-2 text-slate-800">Verifying Consent</h4>
+            <p className="text-center text-xs text-slate-500 max-w-[200px]">Securely exchanging tokens with Setu AA...</p>
+        </div>
+
+        {/* STAGE 2: SUCCESS */}
+        <div className={`absolute inset-0 p-6 flex flex-col items-center justify-center transition-all duration-500 ease-in-out transform ${currentStage === 2 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 pointer-events-none'}`}>
+            <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-6 animate-bounce">
+                <CheckCircle2 size={48} />
+            </div>
+            <h4 className="text-2xl font-bold mb-2 text-slate-800">Connected!</h4>
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full text-green-700 text-xs font-medium border border-green-100">
+                <ShieldCheck size={12} />
+                <span>Bank Grade Security</span>
+            </div>
+        </div>
+
+        {/* STAGE 3: DASHBOARD */}
+        <div className={`absolute inset-0 p-6 flex flex-col transition-all duration-500 ease-in-out transform ${currentStage === 3 ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-95 pointer-events-none'}`}>
+            <div className="w-full flex justify-between items-end mb-6 mt-4">
+                <div>
+                    <p className="text-xs text-slate-500 mb-1">Total Balance</p>
+                    <h4 className="text-3xl font-bold text-slate-900">₹42,850</h4>
+                </div>
+                <div className="w-10 h-10 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
+                </div>
+            </div>
+
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Recent Transactions</p>
+            
+            <div className="space-y-3">
+                {[
+                    { name: 'Uber Trip', amount: '-₹340', date: 'Today, 2:30 PM', icon: '🚗' },
+                    { name: 'Salary Credit', amount: '+₹45,000', date: 'Yesterday', icon: '💰', highlight: true },
+                    { name: 'Spotify', amount: '-₹119', date: 'Oct 24', icon: '🎵' },
+                ].map((t, i) => (
+                    <div key={i} className={`flex items-center justify-between p-3 rounded-xl border ${t.highlight ? 'bg-green-50 border-green-200' : 'bg-white border-slate-100'} shadow-sm`}>
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-lg border border-slate-100 shadow-sm">
+                                {t.icon}
+                            </div>
+                            <div>
+                                <div className="text-sm font-semibold text-slate-800">{t.name}</div>
+                                <div className="text-[10px] text-slate-500">{t.date}</div>
+                            </div>
+                        </div>
+                        <div className={`text-sm font-bold ${t.amount.startsWith('+') ? 'text-green-600' : 'text-slate-800'}`}>
+                            {t.amount}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+
+      </div>
+
+      {/* Navigation Bar */}
+      <div className="h-1 bg-slate-900 mx-auto w-1/3 rounded-full mb-2 opacity-20"></div>
+    </div>
+  );
+};
+
+const HowItWorks = ({ theme }) => {
+  const isDark = theme === 'dark';
+  
   const steps = [
     {
-      number: "01",
-      title: "Connect Your Accounts",
-      description: "Securely link your bank accounts through Setu Account Aggregator. Your consent controls everything.",
+      id: "01",
+      title: "Connect",
+      subtitle: "Link Bank Accounts",
+      description: "Secure, consent-based linking via Setu AA.",
+      icon: <Link2 size={20} />,
+      colorClass: "bg-blue-50 text-blue-600",
+      position: "lg:top-[15%] lg:left-[5%]",
+      rotation: "lg:-rotate-6"
     },
     {
-      number: "02",
-      title: "Data Aggregation",
-      description: "We fetch and organize your transaction data from all connected accounts in one place.",
+      id: "02",
+      title: "Aggregate",
+      subtitle: "Fetch Transactions",
+      description: "Real-time data fetching from all sources.",
+      icon: <Database size={20} />,
+      colorClass: "bg-cyan-50 text-cyan-600",
+      position: "lg:top-[20%] lg:right-[5%]",
+      rotation: "lg:rotate-6"
     },
     {
-      number: "03",
-      title: "AI Analysis",
-      description: "Our AI processes your data, categorizes spending, and identifies patterns and insights.",
+      id: "03",
+      title: "Analyze",
+      subtitle: "AI Processing",
+      description: "Spending patterns & income detection.",
+      icon: <BrainCircuit size={20} />,
+      colorClass: "bg-purple-50 text-purple-600",
+      position: "lg:bottom-[20%] lg:left-[8%]",
+      rotation: "lg:rotate-3"
     },
     {
-      number: "04",
-      title: "Ask Anything",
-      description: "Chat with your financial data using natural language and get instant, intelligent answers.",
+      id: "04",
+      title: "Chat",
+      subtitle: "Ask Anything",
+      description: "Natural language financial insights.",
+      icon: <MessageSquareText size={20} />,
+      colorClass: "bg-pink-50 text-pink-600",
+      position: "lg:bottom-[15%] lg:right-[8%]",
+      rotation: "lg:-rotate-3"
     },
   ];
 
   return (
-    <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Stronger Background Gradient */}
-      <div className="absolute inset-0 bg-linear-to-b from-[#0a0a0f] via-purple-900/10 to-[#0a0a0f] pointer-events-none"></div>
+    <section className={`py-32 relative overflow-hidden ${isDark ? 'bg-[#050505]' : 'bg-[#F8FAFC]'}`}>
       
-      {/* Large Glow Orbs */}
-      <div className="absolute top-1/4 -left-64 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 -right-64 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[120px] pointer-events-none"></div>
-
-      {/* Background Glow Line */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-4xl opacity-30 pointer-events-none">
-         <GlowCurvedLine className="absolute top-0 left-0 h-full w-32 -translate-x-1/2 rotate-12" color="cyan" />
-         <GlowCurvedLine className="absolute top-0 right-0 h-full w-32 translate-x-1/2 -rotate-12" color="purple" />
+      {/* Ambient Background */}
+      <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[100px]"></div>
+          <div className={`absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay`}></div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-20">
-          <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight">
-            How it{" "}
-            <span className="bg-linear-to-r from-purple-500 via-pink-500 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(168,85,247,0.3)]">
-              works
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        
+        {/* Header */}
+        <div className="text-center mb-12 lg:mb-20">
+          <Reveal>
+            <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 text-blue-500 text-sm font-bold tracking-wide uppercase mb-4">
+               Process
             </span>
-          </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            From connecting your accounts to getting insights, it's all seamless.
-          </p>
+            <h2 className={`text-5xl md:text-7xl font-black tracking-tighter mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+               How it works
+            </h2>
+            <p className={`text-xl max-w-2xl mx-auto font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+               Experience the future of financial data in 4 simple steps.
+            </p>
+          </Reveal>
+        </div>
+
+        {/* Layout Container */}
+        <div className="relative w-full flex flex-col items-center lg:h-[700px]">
+            
+            {/* Center Phone Mockup */}
+            <Reveal delay={200} className="z-20">
+            <div className="relative w-[300px] h-[600px] md:w-[320px] md:h-[650px] bg-gray-900 rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(50,50,93,0.25)] border-[8px] border-gray-800 transition-transform duration-500 hover:scale-[1.02]">
+                {/* Outer Ring */}
+                <div className="absolute -inset-[2px] rounded-[3.2rem] border border-gray-700 opacity-50 pointer-events-none"></div>
+                
+                {/* Screen Container */}
+                <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden relative">
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-32 bg-gray-900 rounded-b-2xl z-30"></div>
+                    
+                    {/* Dynamic Screen Component */}
+                    <PhoneScreen isDark={false} />
+                </div>
+            </div>
+            </Reveal>
+
+            {/* Floating Orbit Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 lg:mt-0 lg:block w-full text-left">
+                {steps.map((step, index) => (
+                    <Reveal key={index} delay={400 + (index * 100)} className={`lg:absolute ${step.position} z-10`}>
+                    <div 
+                        className={`
+                            relative p-6 rounded-3xl border backdrop-blur-sm transition-all duration-500 group cursor-default
+                            ${isDark 
+                                ? 'bg-[#121212]/80 border-white/10 hover:bg-[#1a1a2e]' 
+                                : 'bg-white border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]'
+                            }
+                            ${step.rotation}
+                            lg:w-[340px] lg:hover:scale-110 lg:hover:z-30 block
+                        `}
+                    >
+                        {/* Connecting Line (Decorative, hidden on mobile) */}
+                         <div className={`hidden lg:block absolute w-24 h-[1px] bg-gradient-to-r from-transparent to-slate-300 -z-10
+                            ${index % 2 === 0 ? 'left-full top-1/2' : 'right-full top-1/2 rotate-180'}
+                         `}/>
+
+                        <div className="flex items-center justify-between mb-4">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${step.colorClass}`}>
+                                {step.icon}
+                            </div>
+                            <span className={`text-4xl font-black opacity-5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                {step.id}
+                            </span>
+                        </div>
+                        
+                        <h3 className={`text-xl font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {step.title}
+                        </h3>
+                        <p className={`text-xs font-semibold uppercase tracking-wider mb-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                            {step.subtitle}
+                        </p>
+                        
+                        <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                            {step.description}
+                        </p>
+                    </div>
+                    </Reveal>
+                ))}
+            </div>
+
         </div>
         
-        {/* Central Connector Line (Desktop) */}
-        <div className="hidden lg:block absolute top-[55%] left-0 w-full h-0.5 bg-gray-800/50 -translate-y-1/2 z-0">
-            <div className="absolute inset-0 bg-linear-to-r from-transparent via-purple-500 to-transparent opacity-50 animate-pulse"></div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 relative z-10">
-          {steps.map((step, index) => (
-            <div 
-                key={index} 
-                className={`relative group ${index % 2 === 0 ? 'lg:mb-32' : 'lg:mt-32'}`}
-            >
-              {/* Vertical Connector to Center Line (Desktop) */}
-              <div className={`hidden lg:block absolute left-1/2 -translate-x-1/2 w-0.5 bg-gray-700 group-hover:bg-purple-500/50 transition-colors duration-500 -z-10
-                  ${index % 2 === 0 ? 'h-32 -bottom-32 bg-linear-to-b from-gray-800 to-purple-500/20' : 'h-32 -top-32 bg-linear-to-t from-gray-800 to-purple-500/20'}
-              `}></div>
-
-              {/* Connector Dot on Line */}
-              <div className={`hidden lg:block absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-gray-800 border border-purple-500/50 group-hover:bg-purple-500 group-hover:shadow-[0_0_10px_rgba(168,85,247,0.8)] transition-all duration-500 z-0
-                  ${index % 2 === 0 ? '-bottom-[134px]' : '-top-[134px]'}
-              `}></div>
-
-              {/* Card */}
-              <div className="relative h-full p-px rounded-2xl overflow-hidden">
-                {/* Animated Gradient Border - The "Wave" */}
-                <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-purple-600 via-cyan-500 to-purple-600 opacity-0 group-hover:opacity-100 animate-border-wave transition-opacity duration-500"></div>
-                
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-linear-to-r from-purple-500/20 via-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10"></div>
-
-                {/* Card Content */}
-                <div className="relative h-full bg-[#13131f]/90 backdrop-blur-md rounded-2xl p-8 border border-white/5 group-hover:border-transparent transition-colors z-10">
-                
-                {/* Number Background - Gradient Effect Restored */}
-                <div className="absolute -right-4 -top-4 text-9xl font-bold text-white/5 select-none transition-all duration-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-br group-hover:from-purple-600/30 group-hover:to-cyan-600/30 group-hover:scale-110 origin-top-right">
-                    {step.number}
-                </div>
-
-                {/* Icon Placeholder (Dynamic based on index) */}
-                <div className="relative w-12 h-12 mb-6 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-purple-500/50 transition-all duration-500">
-                    {index === 0 && (
-                        <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                    )}
-                    {index === 1 && (
-                        <svg className="w-6 h-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
-                    )}
-                    {index === 2 && (
-                        <svg className="w-6 h-6 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                    )}
-                    {index === 3 && (
-                        <svg className="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
-                    )}
-                </div>
-
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-purple-300 transition-colors relative z-10">
-                    {step.title}
-                </h3>
-                
-                <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors relative z-10">
-                    {step.description}
-                </p>
-              </div>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

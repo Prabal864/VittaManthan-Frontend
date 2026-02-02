@@ -64,16 +64,16 @@
 
 /* Gradient Variants */
 .card-gradient-0 {
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
 }
 .card-gradient-1 {
-  background: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #0891b2 100%);
 }
 .card-gradient-2 {
-  background: linear-gradient(135deg, #f97316 0%, #f43f5e 50%, #d946ef 100%);
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
 }
 .card-gradient-3 {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 50%, #4f46e5 100%);
 }
 .card-gradient-4 {
   background: linear-gradient(135deg, #10b981 0%, #3b82f6 50%, #6366f1 100%);

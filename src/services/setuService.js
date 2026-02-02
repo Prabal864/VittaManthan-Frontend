@@ -51,5 +51,32 @@ export const setuService = {
       console.error("SETU Consent Status Error:", error);
       throw error;
     }
+  },
+
+  ingestData: async (consentId) => {
+    console.log(`Ingesting data for consent ${consentId}...`);
+    try {
+        // User specified port 8085 for this specific endpoint
+        // Sending empty body {} is important for some backend frameworks to process POST correctly
+        const response = await axios.get(`http://localhost:8085/api/setu/transaction/${consentId}/ingestData`, {}, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        // Log detailed error for debugging
+        if (error.response) {
+            console.error("Ingest Data Server Error:", error.response.status, error.response.data);
+            // Throw more descriptive error if available
+            const serverMsg = error.response.data && (error.response.data.message || error.response.data.error);
+            if (serverMsg) throw new Error(serverMsg);
+        } else if (error.request) {
+            console.error("Ingest Data Network Error - No Response:", error.request);
+        } else {
+            console.error("Ingest Data Setup Error:", error.message);
+        }
+        throw error;
+    }
   }
 };
