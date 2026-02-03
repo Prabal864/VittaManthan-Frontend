@@ -37,7 +37,7 @@ const AIResponseDisplay = ({ content, originalPrompt }) => {
         setIsPageLoading(true);
         
         try {
-            const response = await axios.post('http://localhost:9000/prompt', {
+            const response = await axios.post('http://206.189.135.116:9000/prompt', {
                 prompt: originalPromptText,
                 page: pageNum
             });
@@ -61,7 +61,7 @@ const AIResponseDisplay = ({ content, originalPrompt }) => {
             const pages = displayContent.pagination.total_pages;
             const promises = [];
             for (let i = 1; i <= pages; i++) {
-                promises.push(axios.post('http://localhost:9000/prompt', {
+                promises.push(axios.post('http://206.189.135.116:9000/prompt', {
                     prompt: originalPrompt,
                     page: i
                 }));
@@ -503,7 +503,7 @@ const AIChatPage = ({ activeConsents = [] }) => {
                 { text: "Generating financial insights...", status: "active" }
             ]), 2800);
 
-            const response = await axios.post('http://localhost:9000/prompt', {
+            const response = await axios.post('http://206.189.135.116:9000/prompt', {
                 prompt: userMsg.content
             });
 

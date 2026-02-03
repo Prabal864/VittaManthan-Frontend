@@ -428,7 +428,7 @@ const ConsentManager = () => {
 
     setIsRevoking(true);
     try {
-      await axios.post(`http://localhost:8072/api/setu/auth/${consentId}/revokeConsent`);
+      await axios.post(`http://206.189.135.116:8072/api/setu/auth/${consentId}/revokeConsent`);
       
       setConsents(prev => prev.map(c => c.id === consentId ? { ...c, status: 'REVOKED' } : c));
       if (selectedConsent && selectedConsent.id === consentId) {

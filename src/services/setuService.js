@@ -7,7 +7,7 @@ export const setuService = {
   login: async () => {
     console.log("Logging in to SETU via backend...");
     try {
-      const response = await axios.post("http://localhost:8072/api/setu/auth/login", {}, {
+      const response = await axios.post("http://206.189.135.116:8072/api/setu/auth/login", {}, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -23,7 +23,7 @@ export const setuService = {
   createConsent: async (token, consentDetails) => {
     console.log("Creating consent via backend...", consentDetails);
     try {
-      const response = await axios.post("http://localhost:8072/api/setu/auth/consent", consentDetails, {
+      const response = await axios.post("http://206.189.135.116:8072/api/setu/auth/consent", consentDetails, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
@@ -40,7 +40,7 @@ export const setuService = {
   getConsentStatus: async (token, consentId) => {
     console.log(`Fetching consent status for ${consentId}...`);
     try {
-      const response = await axios.get(`http://localhost:8072/api/setu/auth/${consentId}/status?expanded=false`, {
+      const response = await axios.get(`http://206.189.135.116:8072/api/setu/auth/${consentId}/status?expanded=false`, {
         headers: {
           "Authorization": `Bearer ${token}`
         },
@@ -58,7 +58,7 @@ export const setuService = {
     try {
         // User specified port 8085 for this specific endpoint
         // Sending empty body {} is important for some backend frameworks to process POST correctly
-        const response = await axios.get(`http://localhost:8085/api/setu/transaction/${consentId}/ingestData`, {}, {
+        const response = await axios.get(`http://206.189.135.116:8085/api/setu/transaction/${consentId}/ingestData`, {}, {
             headers: {
                 'Content-Type': 'application/json'
             },

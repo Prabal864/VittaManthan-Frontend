@@ -122,7 +122,6 @@ const Dashboard = ({ setAuthenticated }) => {
   }, [refreshKey]); // Add refreshKey as dependency
 
   // Listen for storage changes from ConsentManager
-  // Listen for storage changes from ConsentManager
   useEffect(() => {
     const handleStorageChange = () => {
       setRefreshKey(prev => prev + 1);
@@ -130,13 +129,9 @@ const Dashboard = ({ setAuthenticated }) => {
 
     // Listen for custom event from ConsentManager
     window.addEventListener('consentsUpdated', handleStorageChange);
-    
-    // Also check periodically for updates (fallback)
-    const interval = setInterval(handleStorageChange, 2000);
 
     return () => {
       window.removeEventListener('consentsUpdated', handleStorageChange);
-      clearInterval(interval);
     };
   }, []);
 
@@ -1345,12 +1340,47 @@ const Dashboard = ({ setAuthenticated }) => {
         <section className="dashboard-content-wrapper">
           {activeSection === "Transactions" ? (
             <div className="transactions-panel">
-              {/* Active Consents Carousel */}
-              {activeConsents.length > 0 && (
+              {/* Active Consents Carousel - Always show if user has consent IDs */}
+              {(() => {
+                // Get consents from localStorage for display (independent of SETU session)
+                const saved = localStorage.getItem('setu_consents');
+                const userConsentIdsStr = localStorage.getItem('userConsentIds');
+                
+                let userConsentIds = [];
+                try {
+                  userConsentIds = userConsentIdsStr ? JSON.parse(userConsentIdsStr) : [];
+                } catch (error) {
+                  console.error("Error parsing userConsentIds:", error);
+                }
+
+                // If user has consent IDs, show the cards (even if SETU session expired)
+                if (userConsentIds.length === 0) return null;
+
+                let displayConsents = [];
+                if (saved) {
+                  try {
+                    const parsed = JSON.parse(saved);
+                    displayConsents = parsed.filter(c => userConsentIds.includes(c.id));
+                  } catch (error) {
+                    console.error("Error parsing setu_consents:", error);
+                  }
+                }
+
+                // If no consent data in localStorage, create placeholder cards from IDs
+                if (displayConsents.length === 0 && userConsentIds.length > 0) {
+                  displayConsents = userConsentIds.map(id => ({
+                    id,
+                    status: 'ACTIVE',
+                    createdAt: new Date().toISOString(),
+                    vua: 'User Consent'
+                  }));
+                }
+
+                return displayConsents.length > 0 ? (
                 <div className="active-consents-carousel">
                   <h3>Active Consents</h3>
                   <div className="carousel-track">
-                    {activeConsents.map((consent, index) => {
+                    {displayConsents.map((consent, index) => {
                       const styleObj = getCardStyle(consent.id || `consent-${index}`);
                       const cleanId = (consent.id || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
                       const displayId = cleanId.padEnd(16, "0").slice(0, 16).match(/.{1,4}/g)?.join(" ") || "0000 0000 0000 0000";
@@ -1416,7 +1446,8 @@ const Dashboard = ({ setAuthenticated }) => {
                     })}
                   </div>
                 </div>
-              )}
+                ) : null;
+              })()}
 
                {/* Existing Transactions Logic */}
                {/* Stats removed as per request */}
