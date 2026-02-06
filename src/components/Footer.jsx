@@ -49,7 +49,7 @@ const Footer = ({ theme }) => {
         
         <div className={`mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center transition-colors ${isDark ? 'border-gray-800' : 'border-gray-200'}`}>
           <p className="text-gray-500 text-sm">
-            © 2024 VittaManthan. Built with ❤️ by Prabal Pratap Singh
+            © 2026 VittaManthan. Built with ❤️ by Prabal Pratap Singh
           </p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
             <a href="https://github.com/prabal864" target="_blank" rel="noopener noreferrer" className={`transition-colors ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}>

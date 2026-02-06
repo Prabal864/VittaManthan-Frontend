@@ -710,9 +710,7 @@ const Hero = ({ theme = 'dark' }) => {
           </span>
         </h1>
         
-        <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto mb-12 leading-relaxed font-light">
-          Turn raw financial data into <span className="font-semibold text-slate-800">clear, actionable insights.</span> Access regulated transaction data, visualize spending, and chat with your money.
-        </p>
+      
 
         <div className="flex flex-col sm:flex-row gap-5 justify-center items-center w-full max-w-lg mx-auto relative z-20">
           <button className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg bg-slate-900 text-white shadow-[0_10px_30px_rgba(15,23,42,0.2)] hover:shadow-[0_20px_40px_rgba(15,23,42,0.3)] hover:-translate-y-1 transition-all flex items-center justify-center gap-2 group">
