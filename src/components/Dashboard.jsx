@@ -23,6 +23,7 @@ import {
 } from 'recharts';
 import ConsentManager from "./ConsentManager";
 import ProcessingModal from "./ProcessingModal";
+import Toast from "./Toast";
 import { SetuProvider } from "../contexts/SetuContext";
 import { 
   LayoutDashboard, 
@@ -82,7 +83,7 @@ const Dashboard = ({ setAuthenticated }) => {
     }
     return "Dashboard";
   });
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
   const [selectedConsentId, setSelectedConsentId] = useState("ALL"); // New State for Dropdown
   const [isConsentDropdownOpen, setIsConsentDropdownOpen] = useState(false);
   const [graphTimeRange, setGraphTimeRange] = useState("Weekly"); // State for Graph Time Range
@@ -744,41 +745,21 @@ const Dashboard = ({ setAuthenticated }) => {
                 </div>
                 <div style={{display:'flex', gap:'8px', alignItems:'center'}}>
                     {/* Native Date Picker Integration */}
-                    <div style={{display:'flex', alignItems:'center', gap:'6px'}}>
+                    <div className="date-range-picker-wrapper">
                         <input 
                             type="date"
                             className="modern-date-input"
                             min={minDate}
                             max={maxDate}
-                            style={{
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '6px',
-                                color: 'var(--text-primary)',
-                                padding: '4px 8px',
-                                fontSize: '0.75rem',
-                                outline: 'none',
-                                colorScheme: 'dark'
-                            }}
                             value={graphStartDate}
                             onChange={(e) => setGraphStartDate(e.target.value)}
                         />
-                        <span style={{color: 'var(--text-secondary)', fontSize: '0.75rem'}}>-</span>
+                        <span className="date-separator"></span>
                         <input 
                             type="date"
                             className="modern-date-input"
                             min={minDate}
                             max={maxDate}
-                            style={{
-                                background: 'rgba(255,255,255,0.05)',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '6px',
-                                color: 'var(--text-primary)',
-                                padding: '4px 8px',
-                                fontSize: '0.75rem',
-                                outline: 'none',
-                                colorScheme: 'dark'
-                            }}
                             value={graphEndDate}
                             onChange={(e) => setGraphEndDate(e.target.value)}
                         />
@@ -1354,6 +1335,15 @@ const Dashboard = ({ setAuthenticated }) => {
             </li>
           </ul>
         </nav>
+        
+        <div className="sidebar-footer">
+          <button className="logout-link" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}>
+            <span className="icon">
+              {isSidebarCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+            </span>
+            {!isSidebarCollapsed && "Collapse Sidebar"}
+          </button>
+        </div>
       </aside>
 
       <main className="dashboard-main">
@@ -1588,7 +1578,7 @@ const Dashboard = ({ setAuthenticated }) => {
                             <div style={{ display: 'flex', gap: '2.5rem' }}>
                                 <div className="card-info-col">
                                   <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', marginBottom: '6px', display: 'block', letterSpacing: '1px' }}>CONSENT HOLDER</span>
-                                  <span className="card-value" style={{ color: '#fff', fontSize: '1rem', fontWeight: 600 }}>{consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'UNKNOWN'}</span>
+                                  <span className="card-value" style={{ color: '#fff', fontSize: '1rem', fontWeight: 600 }}>{localStorage.getItem('firstName') || localStorage.getItem('username') || (consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'UNKNOWN')}</span>
                                 </div>
                                 <div className="card-info-col">
                                   <span className="card-label" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', marginBottom: '6px', display: 'block', letterSpacing: '1px' }}>CREATED</span>
@@ -1614,9 +1604,13 @@ const Dashboard = ({ setAuthenticated }) => {
 
               <div className="transactions-list">
                 {notification && (
-                  <div className={`notification-banner ${notification.type}`}>
-                    {notification.message}
-                  </div>
+                  <Toast 
+                    title="Success" 
+                    message={notification.message} 
+                    type={notification.type} 
+                    onClose={() => {}} 
+                    duration={3000}
+                  />
                 )}
                 <ProcessingModal isOpen={loading} message={loadingMessage || "Processing..."} />
                 {!loading && error && <div className="error-banner">{error}</div>}
@@ -1647,13 +1641,13 @@ const Dashboard = ({ setAuthenticated }) => {
                     <div className="transactions-table-header">
                       <div className="th-item"><div className="custom-checkbox"></div></div>
                       <div className="th-item">TRANSACTION ID</div>
-                      <div className="th-item">CUSTOMER</div>
+                      <div className="th-item">Account Number</div>
                       <div className="th-item">TOTAL</div>
                       <div className="th-item">TYPE</div>
-                      <div className="th-item">ORDER DATE</div>
+                      <div className="th-item">Date</div>
                       <div className="th-item">PAYMENT</div>
                       <div className="th-item">PAYMENT METHOD</div>
-                      <div className="th-item">TRACKING NUMBER</div>
+                      <div className="th-item">Reference Number</div>
                     </div>
                     {transactions.map((tx, idx) => {
                        // Use account number if available, otherwise fallback to ID or narration
