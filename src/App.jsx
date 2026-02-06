@@ -47,7 +47,6 @@ function App() {
         <Navbar theme={theme} toggleTheme={toggleTheme} />
         <main className="relative z-10 transition-colors duration-300">
           <Hero theme={theme} />
-          <Stats theme={theme} />
           <Features theme={theme} />
           <UseCases theme={theme} />
           <HowItWorks theme={theme} />

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Send, Bot, User, Sparkles, ChevronDown, ChevronUp, Database, CheckCircle2, Loader2, ChevronRight, Download, FileText, Table, FileSpreadsheet } from 'lucide-react';
+import { Send, Bot, User, Sparkles, ChevronDown, ChevronUp, Database, CheckCircle2, Loader2, ChevronRight, Download, FileText, Table, FileSpreadsheet, PieChart, AlertTriangle, TrendingUp, Calendar, ArrowRight, Wallet } from 'lucide-react';
 import MarkdownRenderer from '../utils/MarkdownRenderer';
 import { setuService } from '../services/setuService';
 import Toast from './Toast';
@@ -37,7 +37,9 @@ const AIResponseDisplay = ({ content, originalPrompt }) => {
         setIsPageLoading(true);
         
         try {
-            const response = await axios.post('https://api.prabalsingh.dev/api/setu/auth/prompt', {
+            const userId = localStorage.getItem('userId') || localStorage.getItem('username') || 'Unknown';
+            const response = await axios.post('https://api.prabalsingh.dev/prompt', {
+                user_id: userId,
                 prompt: originalPromptText,
                 page: pageNum
             });
@@ -58,10 +60,12 @@ const AIResponseDisplay = ({ content, originalPrompt }) => {
         setIsExporting(true);
         let allPayload = [];
         try {
+            const userId = localStorage.getItem('userId') || localStorage.getItem('username') || 'Unknown';
             const pages = displayContent.pagination.total_pages;
             const promises = [];
             for (let i = 1; i <= pages; i++) {
-                promises.push(axios.post('https://api.prabalsingh.dev/api/setu/auth/prompt', {
+                promises.push(axios.post('https://api.prabalsingh.dev/prompt', {
+                    user_id: userId,
                     prompt: originalPrompt,
                     page: i
                 }));
@@ -163,12 +167,12 @@ const AIResponseDisplay = ({ content, originalPrompt }) => {
             <div className="ai-response-content-full">
                  {/* Meta Header */}
                  {displayContent.mode && (
-                    <div style={{marginBottom: '1rem', display:'flex', gap:'10px', alignItems:'center'}}>
-                        <span className="analysis-chip" style={{fontSize: '0.8rem'}}>
-                            <Sparkles size={12} /> {displayContent.mode.replace(/_/g, ' ')}
+                    <div style={{marginBottom: '1.5rem', display:'flex', gap:'10px', alignItems:'center'}}>
+                        <span className="analysis-chip" style={{fontSize: '0.95rem'}}>
+                            <Sparkles size={14} /> {displayContent.mode.replace(/_/g, ' ')}
                         </span>
                         {displayContent.matching_transactions_count > 0 && (
-                            <span style={{fontSize: '0.8rem', color: 'var(--text-secondary)'}}>
+                            <span style={{fontSize: '0.95rem', color: 'var(--text-secondary)'}}>
                                 Found {displayContent.matching_transactions_count} matches
                             </span>
                         )}
@@ -503,7 +507,9 @@ const AIChatPage = ({ activeConsents = [] }) => {
                 { text: "Generating financial insights...", status: "active" }
             ]), 2800);
 
-            const response = await axios.post('https://api.prabalsingh.dev/api/setu/auth/prompt', {
+            const userId = localStorage.getItem('userId') || localStorage.getItem('username') || 'Unknown';
+            const response = await axios.post('https://api.prabalsingh.dev/prompt', {
+                user_id: userId,
                 prompt: userMsg.content
             });
 
@@ -541,6 +547,33 @@ const AIChatPage = ({ activeConsents = [] }) => {
         }
     };
 
+    const suggestionCards = [
+        {
+            icon: <PieChart size={24} />,
+            title: "Analyze Spending",
+            desc: "Breakdown by category",
+            prompt: "Analyze my spending patterns for the last month broken down by category. Provide the insights in English."
+        },
+        {
+            icon: <AlertTriangle size={24} />,
+            title: "Detect Anomalies",
+            desc: "Find unusual activities",
+            prompt: "Scan my recent transactions for any unusual or high-value activities. Explain the findings in English."
+        },
+        {
+            icon: <TrendingUp size={24} />,
+            title: "Top Merchants",
+            desc: "Where do I spend most?",
+            prompt: "Identify the top 5 merchants or entities where I have spent the most money in the last 30 days. Provide the list and insights in English."
+        },
+        {
+            icon: <Wallet size={24} />,
+            title: "Savings Advice",
+            desc: "Get tips to save more",
+            prompt: "Based on my recent transaction history, suggest practical ways I can cut costs and save money. Provide the advice in English."
+        }
+    ];
+
     return (
         <div className="ai-chat-page">
             <div className="ai-chat-container">
@@ -566,6 +599,35 @@ const AIChatPage = ({ activeConsents = [] }) => {
                         </div>
                     </div>
                 ))}
+
+                {messages.length === 1 && !isLoading && (
+                    <div className="suggestions-grid-wrapper">
+                        <div className="suggestions-grid">
+                            {suggestionCards.map((card, idx) => (
+                                <button 
+                                    key={idx} 
+                                    className="suggestion-card" 
+                                    onClick={() => {
+                                        setPrompt(card.prompt);
+                                        // Optional: Auto-focus input
+                                        inputRef.current?.focus();
+                                    }}
+                                >
+                                    <div className="suggestion-icon-box">
+                                        {card.icon}
+                                    </div>
+                                    <div className="suggestion-text">
+                                        <h4>{card.title}</h4>
+                                        <p>{card.desc}</p>
+                                    </div>
+                                    <div className="suggestion-arrow">
+                                        <ArrowRight size={16} />
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
                 
                 {isLoading && (
                     <div className="ai-message-row ai">
