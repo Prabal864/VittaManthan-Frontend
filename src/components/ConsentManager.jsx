@@ -657,6 +657,7 @@ const ConsentManager = () => {
 
                                 {/* Chip Row */}
                                 <div className="card-chip-row">
+                                  <div className="sim-chip"></div>
                                   <div className="contactless-symbol" style={{ marginLeft: 'auto' }}>
                                     <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
                                       <path d="M12 10.9c-.6.6-1.5.6-2.1 0-.6-.6-.6-1.5 0-2.1.6-.6 1.5-.6 2.1 0 .6.6.6 1.5 0 2.1z" fill="rgba(255,255,255,0.8)" />
@@ -713,8 +714,17 @@ const ConsentManager = () => {
               ) : (
                 <div className="consents-grid">
                   {consents.map((consent, idx) => {
-                    const styleObj = getCardStyle(consent.id);                    const cleanId = (consent.id || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-                    const displayId = cleanId.padEnd(16, "0").slice(0, 16).match(/.{1,4}/g)?.join(" ") || "0000 0000 0000 0000";                    return (
+                    const styleObj = getCardStyle(consent.id);
+                    const cleanId = (consent.id || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+                    const displayId = cleanId.padEnd(16, "0").slice(0, 16).match(/.{1,4}/g)?.join(" ") || "0000 0000 0000 0000";
+                    
+                    // Get user name for card display
+                    const storedUser = localStorage.getItem('username');
+                    const displayName = storedUser 
+                      ? storedUser.split('@')[0].toUpperCase() 
+                      : (consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'USER');
+
+                    return (
                         <div 
                             key={idx} 
                             className={`consent-card-premium ${styleObj.pattern}`} 
@@ -729,7 +739,10 @@ const ConsentManager = () => {
                           
                           {/* Top Row: Provider & Status */}
                           <div className="card-top-row">
-                              <span className="provider-logo">SETU<span className="font-light">CONSENT</span></span>
+                              <span className="provider-logo">
+                                SETU
+                                <span className="font-light" style={{ opacity: 1, fontWeight: 500 }}>CONSENT</span>
+                              </span>
                               <div className="status-badge-pill">
                                   <span className={`status-dot-pulse ${consent.status?.toLowerCase()}`}></span>
                                   <span className="status-label">{consent.status}</span>
@@ -738,6 +751,7 @@ const ConsentManager = () => {
 
                           {/* Chip Row */}
                           <div className="card-chip-row">
+                              <div className="sim-chip"></div>
                               <div className="contactless-symbol" style={{ marginLeft: 'auto' }}>
                                   <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
                                       <path d="M12 10.9c-.6.6-1.5.6-2.1 0-.6-.6-.6-1.5 0-2.1.6-.6 1.5-.6 2.1 0 .6.6.6 1.5 0 2.1z" fill="rgba(255,255,255,0.8)" />
@@ -756,7 +770,7 @@ const ConsentManager = () => {
                           <div className="card-bottom-row">
                               <div className="card-info-col">
                                   <span className="info-label">AUTHORIZED FOR</span>
-                                  <span className="info-value truncate w-32" title={consent.vua}>{consent.vua ? consent.vua.split('@')[0].toUpperCase() : 'USER'}</span>
+                                  <span className="info-value truncate w-32" title={displayName}>{displayName}</span>
                               </div>
                               <div className="card-info-col">
                                   <span className="info-label">VALID THRU</span>
