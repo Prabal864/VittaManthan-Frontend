@@ -109,9 +109,14 @@ const Signup = ({ setAuthenticated }) => {
 
     } catch (err) {
       if (err.response) {
-        setError("Signup failed");
+        // Handle 409 Conflict specifically
+        if (err.response.status === 409) {
+            setError("Username or Email already exists");
+        } else {
+            setError("Signup failed. Please try again.");
+        }
       } else {
-        setError("Network error");
+        setError("Network error. Please check your connection.");
       }
     }
   };

@@ -3,7 +3,7 @@ import { useSetu } from '../contexts/SetuContext';
 import axios from 'axios';
 import Toast from './Toast';
 import ConfirmationModal from './ConfirmationModal';
-import { LogOut, Undo2 } from 'lucide-react';
+import { LogOut, Undo2, Tag } from 'lucide-react';
 import { saveUserConsent, fetchUserConsents } from '../services/authService';
 import '../styles/ConsentManager.css';
 
@@ -12,6 +12,7 @@ const ConsentManager = () => {
   
   // Initialize consents as empty - will be fetched based on userConsentIds
   const [consents, setConsents] = useState([]);
+  const [isLoadingConsents, setIsLoadingConsents] = useState(false);
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedConsent, setSelectedConsent] = useState(null);
@@ -37,10 +38,13 @@ const ConsentManager = () => {
 
       if (userConsentIds.length === 0) {
         setConsents([]);
+        setIsLoadingConsents(false);
         return;
       }
 
+      setIsLoadingConsents(true);
       const fetchedConsents = [];
+      const consentNames = JSON.parse(localStorage.getItem('setu_consent_names') || '{}');
 
       try {
         // Fetch details for each consent ID
@@ -52,7 +56,8 @@ const ConsentManager = () => {
                 id: consentId,
                 ...consentData,
                 status: consentData.status || 'ACTIVE',
-                createdAt: consentData.createdAt || new Date().toISOString()
+                createdAt: consentData.createdAt || new Date().toISOString(),
+                consentName: consentNames[consentId] || 'Unnamed Consent'
               });
             }
           } catch (err) {
@@ -62,7 +67,8 @@ const ConsentManager = () => {
               id: consentId,
               status: 'UNKNOWN',
               createdAt: new Date().toISOString(),
-              fetchError: true
+              fetchError: true,
+              consentName: consentNames[consentId] || 'Unnamed Consent'
             });
           }
         }
@@ -72,6 +78,8 @@ const ConsentManager = () => {
         localStorage.setItem('setu_consents', JSON.stringify(fetchedConsents));
       } catch (error) {
         console.error("Error fetching user consents:", error);
+      } finally {
+        setIsLoadingConsents(false);
       }
     };
 
@@ -291,6 +299,7 @@ const ConsentManager = () => {
   }, [getConsentStatus]);
 
   const [formData, setFormData] = useState({
+    consentName: '',
     mobileNumber: '',
     unit: 'MONTH',
     value: '2',
@@ -338,8 +347,8 @@ const ConsentManager = () => {
     setIsSubmitting(true);
     setLocalError('');
 
-    if (!formData.mobileNumber) {
-      setLocalError("Mobile number is required");
+    if (!formData.mobileNumber || !formData.consentName) {
+      setLocalError("Mobile number and Consent Name are required");
       setIsSubmitting(false);
       return;
     }
@@ -362,11 +371,19 @@ const ConsentManager = () => {
 
       const result = await createConsent(payload);
       
+      // Save consent name locally
+      if (result && result.id) {
+        const consentNames = JSON.parse(localStorage.getItem('setu_consent_names') || '{}');
+        consentNames[result.id] = formData.consentName;
+        localStorage.setItem('setu_consent_names', JSON.stringify(consentNames));
+      }
+
       // Add to list and reset view
       const newConsent = {
         ...result,
         ...payload, // Merge payload to show details if not returned
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        consentName: formData.consentName
       };
       
       setConsents(prev => [newConsent, ...prev]);
@@ -480,11 +497,11 @@ const ConsentManager = () => {
       {!token ? (
         <div className="login-card">
           <div className="login-icon">🔐</div>
-          <h3>Connect to SETU</h3>
-          <p>Authenticate to access your financial data consents.</p>
+          <h3>Start Secure Session</h3>
+          <p>Authenticate to view and manage your account consents.</p>
           
           <button onClick={handleLogin} className="btn-primary login-btn" disabled={loading}>
-            {loading ? 'Connecting...' : 'Login with SETU'}
+            {loading ? 'Starting...' : 'Start Session'}
           </button>
         </div>
       ) : (
@@ -499,6 +516,23 @@ const ConsentManager = () => {
               <p className="form-subtitle">Request access to financial information</p>
               
               <form onSubmit={handleCreateConsent} className="consent-form">
+                <div className="form-section">
+                  <label>Consent Name</label>
+                  <div className="input-group">
+                    <span style={{ paddingLeft: '1rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center' }}>
+                      <Tag size={18} />
+                    </span>
+                    <input 
+                      type="text" 
+                      name="consentName"
+                      value={formData.consentName} 
+                      onChange={handleInputChange} 
+                      placeholder="e.g. Home Loan, Personal Loan"
+                      required
+                    />
+                  </div>
+                </div>
+
                 <div className="form-section">
                   <label>Mobile Number</label>
                   <div className="input-group">
@@ -609,16 +643,12 @@ const ConsentManager = () => {
                 {/* Top Summary Cards */}
                 <div className="summary-cards-row">
                   <div className="summary-card highlight">
+                    <span className="summary-label">Consent Name</span>
+                    <span className="summary-value" title={selectedConsent.consentName}>{selectedConsent.consentName || 'Unnamed Consent'}</span>
+                  </div>
+                  <div className="summary-card">
                     <span className="summary-label">Consent ID</span>
                     <span className="summary-value mono" title={selectedConsent.id}>{selectedConsent.id}</span>
-                  </div>
-                  <div className="summary-card">
-                    <span className="summary-label">Data Consumer</span>
-                    <span className="summary-value">{selectedConsent.vua}</span>
-                  </div>
-                  <div className="summary-card">
-                    <span className="summary-label">Valid Until</span>
-                    <span className="summary-value">{new Date(selectedConsent.dataRange?.to).toLocaleDateString()}</span>
                   </div>
                 </div>
 
@@ -704,7 +734,12 @@ const ConsentManager = () => {
           {/* List View */}
           {!showCreateForm && !selectedConsent && (
             <div className="consents-container fade-in">
-              {consents.length === 0 ? (
+              {isLoadingConsents ? (
+                <div className="loading-state">
+                  <div className="spinner"></div>
+                  <p>Loading consents...</p>
+                </div>
+              ) : consents.length === 0 ? (
                 <div className="empty-state">
                   <div className="empty-icon">📄</div>
                   <h3>No Consents Found</h3>
@@ -740,7 +775,7 @@ const ConsentManager = () => {
                           {/* Top Row: Provider & Status */}
                           <div className="card-top-row">
                               <span className="provider-logo">
-                                SETU
+                                VITTA
                                 <span className="font-light" style={{ opacity: 1, fontWeight: 500 }}>CONSENT</span>
                               </span>
                               <div className="status-badge-pill">
@@ -773,11 +808,9 @@ const ConsentManager = () => {
                                   <span className="info-value truncate w-32" title={displayName}>{displayName}</span>
                               </div>
                               <div className="card-info-col">
-                                  <span className="info-label">VALID THRU</span>
-                                  <span className="info-value">
-                                      {consent.dataRange?.to 
-                                        ? new Date(consent.dataRange.to).toLocaleDateString(undefined, { month: '2-digit', year: '2-digit' }) 
-                                        : '12/99'}
+                                  <span className="info-label">CONSENT NAME</span>
+                                  <span className="info-value truncate w-32" title={consent.consentName || 'Unnamed'}>
+                                      {consent.consentName || 'Unnamed'}
                                   </span>
                               </div>
                               {/* Revoke visual button (small) */}

@@ -124,6 +124,8 @@ body,
   flex-direction: column;
   padding: 32px 24px;
   transition: all var(--transition-speed);
+  z-index: 10001;
+  position: relative;
 }
 
 .logo {

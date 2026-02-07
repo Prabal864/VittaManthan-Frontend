@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Send, Bot, User, Sparkles, ChevronDown, ChevronUp, Database, CheckCircle2, Loader2, ChevronRight, Download, FileText, Table, FileSpreadsheet, PieChart, AlertTriangle, TrendingUp, Calendar, ArrowRight, Wallet } from 'lucide-react';
+import { Send, Bot, User, Sparkles, ChevronDown, ChevronUp, Database, CheckCircle2, Loader2, ChevronRight, Download, FileText, Table, FileSpreadsheet, PieChart, AlertTriangle, TrendingUp, Calendar, ArrowRight, Wallet, Trash2 } from 'lucide-react';
 import MarkdownRenderer from '../utils/MarkdownRenderer';
 import { setuService } from '../services/setuService';
 import Toast from './Toast';
@@ -366,6 +366,7 @@ const AIChatPage = ({ activeConsents = [] }) => {
     const [toast, setToast] = useState(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const dropdownRef = useRef(null);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
@@ -424,6 +425,48 @@ const AIChatPage = ({ activeConsents = [] }) => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    // Delete Chat History Handler
+    const handleDeleteHistory = () => {
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDeleteHistory = async () => {
+        const userId = localStorage.getItem('userId') || localStorage.getItem('username');
+        if (!userId) return;
+
+        setShowDeleteConfirm(false);
+        setIsLoading(true);
+        try {
+            await axios.delete(`https://api.prabalsingh.dev/history/${userId}`);
+            
+            // Reset messages to initial state
+            setMessages([{
+                id: 'init',
+                role: 'ai',
+                content: {
+                    answer: "Hello! I'm your AI financial assistant. \n\nI can help you analyze your transactions, detect anomalies, or answer questions about your spending.\n\nType a question below to get started."
+                }
+            }]);
+
+            setToast({
+                title: "Chat History Deleted",
+                message: "All your chat history has been successfully deleted.",
+                type: 'success',
+                duration: 4000
+            });
+        } catch (error) {
+            console.error("Failed to delete chat history:", error);
+            setToast({
+                title: "Delete Failed",
+                message: "Failed to delete chat history. Please try again.",
+                type: 'error',
+                duration: 4000
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     // Ingest Handler
     const handleIngest = async () => {
@@ -738,7 +781,7 @@ const AIChatPage = ({ activeConsents = [] }) => {
                             {selectedConsentForIngest ? (
                                 <span className="selected-value">
                                     <Database size={14} />
-                                    Consent {selectedConsentForIngest.slice(0, 8)}...
+                                    {activeConsents.find(c => c.id === selectedConsentForIngest)?.consentName || `Consent ${selectedConsentForIngest.slice(0, 8)}...`}
                                 </span>
                             ) : (
                                 <span className="placeholder-text">Select Active Consent</span>
@@ -763,7 +806,7 @@ const AIChatPage = ({ activeConsents = [] }) => {
                                         </div>
                                         <div className="option-content">
                                             <div className="option-header">
-                                                <span className="option-id">Consent {c.id.slice(0, 8)}...</span>
+                                                <span className="option-id">{c.consentName || `Consent ${c.id.slice(0, 8)}...`}</span>
                                                 <span className="option-status-badge">
                                                     <span className="status-dot"></span>
                                                     ACTIVE
@@ -797,6 +840,16 @@ const AIChatPage = ({ activeConsents = [] }) => {
                     >
                         <Database size={14} />
                         Ingest Data
+                    </button>
+                    
+                    <button 
+                        className="ai-toolbar-btn delete" 
+                        onClick={handleDeleteHistory}
+                        disabled={isLoading || messages.length <= 1}
+                        title="Delete all chat history"
+                    >
+                        <Trash2 size={14} />
+                        Clear History
                     </button>
                 </div>
 
@@ -833,6 +886,24 @@ const AIChatPage = ({ activeConsents = [] }) => {
                     duration={toast.duration}
                     onClose={() => setToast(null)} 
                 />
+            )}
+
+            {showDeleteConfirm && (
+                <div className="confirmation-overlay" onClick={() => setShowDeleteConfirm(false)}>
+                    <div className="confirmation-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="confirmation-body">
+                            <p>Are you sure you want to delete all chat history? This action cannot be undone.</p>
+                        </div>
+                        <div className="confirmation-actions">
+                            <button className="confirm-btn confirm-ok" onClick={confirmDeleteHistory}>
+                                OK
+                            </button>
+                            <button className="confirm-btn confirm-cancel" onClick={() => setShowDeleteConfirm(false)}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

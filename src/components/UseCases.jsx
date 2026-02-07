@@ -859,11 +859,12 @@ const SectionSecurity = ({ theme }) => {
                              <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-6">
                                 <ShieldCheck size={32} />
                              </div>
-                             <h3 className={`text-3xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>256-bit AES Encryption</h3>
+                             <h3 className={`text-3xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>Secure Data Handshake</h3>
                              <p className={`text-lg max-w-md ${isDark ? 'text-gray-400' : 'text-slate-600'}`}>
-                                 Every byte of data is encrypted at rest and in transit. Even we cannot see your financial details.
+                                 We use industry-standard secure tokens for session management. Your consent data is handled safely via SETU Account Aggregator.
                              </p>
                         </div>
+
                         {/* Decorative animated lock visual */}
                         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Lock size={300} strokeWidth={0.5} />
@@ -911,13 +912,14 @@ const SectionSecurity = ({ theme }) => {
                         <div className="relative z-10 max-w-md">
                              <div className="flex items-center gap-3 mb-4">
                                 <Fingerprint size={28} className="text-emerald-400" />
-                                <span className="text-emerald-400 font-bold uppercase tracking-wider text-sm">Biometric Ready</span>
+                                <span className="text-emerald-400 font-bold uppercase tracking-wider text-sm">Secure Access</span>
                              </div>
-                             <h3 className="text-3xl font-bold mb-4 text-white">Your Face is Your Key.</h3>
+                             <h3 className="text-3xl font-bold mb-4 text-white">Your Privacy First.</h3>
                              <p className="text-slate-400 text-lg">
-                                 Seamless login with FaceID and TouchID support on all devices.
+                                 Seamless login and robust session management ensure your financial data is accessible only to you.
                              </p>
                         </div>
+
                         {/* Visual Fingerprint */}
                         <div className="hidden md:block opacity-30 group-hover:opacity-50 transition-opacity">
                             <Fingerprint size={160} className="text-emerald-500" />

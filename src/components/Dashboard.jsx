@@ -4,6 +4,7 @@ import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import "../index.css";
+import "../index-mobile.css";
 import { fetchTransactionsByConsentId } from "../api";
 import { useTransactionsByConsentId } from "../hooks/useTransactionsByConsentId";
 import { 
@@ -66,7 +67,8 @@ import {
   Bot,
   FileText,
   FileSpreadsheet,
-  Table
+  Table,
+  Menu
 } from "lucide-react";
 import EditProfileModal from "./EditProfileModal";
 import AIChatPage from "./AIChatPage";
@@ -90,7 +92,12 @@ const Dashboard = ({ setAuthenticated }) => {
   const [graphStartDate, setGraphStartDate] = useState(""); // Custom Start Date
   const [graphEndDate, setGraphEndDate] = useState("");   // Custom End Date
   const [isStackExpanded, setIsStackExpanded] = useState(false); // New State for Stack Animation
+  const [isFloating, setIsFloating] = useState(false); // State for floating animation
+  const [floatingPositions, setFloatingPositions] = useState([]); // Random positions for floating cards
+  const [draggedCard, setDraggedCard] = useState(null); // Track which card is being dragged
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 }); // Drag offset
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // Sidebar State
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Mobile Menu State
   const [consentId, setConsentId] = useState("");
   const [page, setPage] = useState(1);
   const pageSize = 12;
@@ -158,6 +165,34 @@ const Dashboard = ({ setAuthenticated }) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isConsentDropdownOpen]);
+
+  // Handle dragging of floating cards
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (draggedCard !== null && isFloating) {
+        const newPositions = [...floatingPositions];
+        newPositions[draggedCard] = {
+          x: e.clientX - window.innerWidth / 2 - dragOffset.x,
+          y: e.clientY - window.innerHeight / 2 - dragOffset.y,
+          rotation: floatingPositions[draggedCard].rotation
+        };
+        setFloatingPositions(newPositions);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setDraggedCard(null);
+    };
+
+    if (isFloating) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isFloating, draggedCard, floatingPositions, dragOffset]);
 
   // Derived state for the currently selected consent object
   const currentConsent = useMemo(() => {
@@ -1063,11 +1098,31 @@ const Dashboard = ({ setAuthenticated }) => {
                          className="card-stack-container" 
                          style={{
                              height: isStackExpanded 
-                                ? `${Math.max(220, activeConsents.length * 240 + 20)}px` // Expanded height
-                                : '240px' // Collapsed height
+                                ? `${Math.max(220, activeConsents.length * 260 + 20)}px` // Expanded height
+                                : '280px', // Collapsed height
+                             zIndex: isFloating ? 10000 : 'auto',
+                             perspective: isFloating ? 'none' : undefined,
+                             transform: isFloating ? 'none' : undefined
                          }}
-                         onClick={() => setIsStackExpanded(!isStackExpanded)}
+                         onClick={(e) => {
+                            if (!isFloating) {
+                                // Generate random positions for floating across full viewport
+                                const newPositions = activeConsents.map(() => ({
+                                    x: (Math.random() - 0.5) * (window.innerWidth - 400),
+                                    y: (Math.random() - 0.5) * (window.innerHeight - 300),
+                                    rotation: Math.random() * 360
+                                }));
+                                setFloatingPositions(newPositions);
+                                setIsFloating(true);
+                            } else {
+                                // Close floating view if clicking on empty container space
+                                setIsFloating(false);
+                                setFloatingPositions([]);
+                                setDraggedCard(null);
+                            }
+                         }}
                     >
+                        {isFloating && <div className="floating-overlay" onClick={(e) => { e.stopPropagation(); setIsFloating(false); setFloatingPositions([]); setDraggedCard(null); }} />}
                         {activeConsents.length === 0 ? (
                            <div className="no-card-msg">No Active Accounts Linked</div>
                         ) : activeConsents.map((consent, i) => {
@@ -1079,29 +1134,65 @@ const Dashboard = ({ setAuthenticated }) => {
                              const username = localStorage.getItem('username') || localStorage.getItem('firstName') || 'User';
                              const holderName = consent.vua ? consent.vua.split('@')[0].toUpperCase() : username.toUpperCase();
                              
-                             // Calculate dynamic styles for stack/spread animation
-                             const stackStyle = isStackExpanded 
-                                ? { 
-                                     top: `${i * 240}px`, 
+                             // Calculate dynamic styles for stack/spread/floating animation
+                             let stackStyle;
+                             if (isFloating && floatingPositions[i]) {
+                                stackStyle = {
+                                    top: `50%`,
+                                    left: `50%`,
+                                    width: '380px', // Fixed width to prevent stretching
+                                    height: '220px', // Fixed height
+                                    transform: `translate(-50%, -50%) translate(${floatingPositions[i].x}px, ${floatingPositions[i].y}px) rotate(${floatingPositions[i].rotation}deg) scale(1)`,
+                                    zIndex: draggedCard === i ? 10050 + activeConsents.length : 10050 + i,
+                                    position: 'fixed',
+                                    cursor: draggedCard === i ? 'grabbing' : 'grab',
+                                    transition: draggedCard === i ? 'none' : 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                                };
+                             } else if (isStackExpanded) {
+                                stackStyle = { 
+                                     top: `${i * 260}px`, 
                                      transform: 'scale(1)',
                                      zIndex: activeConsents.length - i,
-                                     position: 'absolute'
-                                  }
-                                : {
-                                     top: `${i * 10}px`,
-                                     transform: `scale(${1 - (i * 0.05)}) translateY(${i * -5}px)`,
-                                     zIndex: activeConsents.length - i,
-                                     opacity: 1 - (i * 0.2),
-                                     position: 'absolute'
+                                     position: 'absolute',
+                                     transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
                                   };
+                             } else {
+                                stackStyle = {
+                                     top: `${i * 12}px`,
+                                     transform: `scale(${1 - (i * 0.04)}) translateY(${i * -6}px)`,
+                                     zIndex: activeConsents.length - i,
+                                     opacity: 1 - (i * 0.15),
+                                     position: 'absolute',
+                                     transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                                  };
+                             }
 
                              return (
                                 <div 
                                     key={consent.id}
                                     className="card-stack-item"
                                     style={stackStyle}
+                                    onClick={(e) => {
+                                        if (isFloating) {
+                                            e.stopPropagation();
+                                        }
+                                    }}
+                                    onMouseDown={(e) => {
+                                        if (isFloating) {
+                                            e.stopPropagation();
+                                            const rect = e.currentTarget.getBoundingClientRect();
+                                            setDragOffset({
+                                                x: e.clientX - rect.left - rect.width / 2,
+                                                y: e.clientY - rect.top - rect.height / 2
+                                            });
+                                            setDraggedCard(i);
+                                        }
+                                    }}
                                 >
-                                    <div className="modern-consent-card" style={{ background: styleObj.background }}>
+                                    <div className="modern-consent-card" style={{ 
+                                        background: styleObj.background,
+                                        boxShadow: isFloating ? 'none' : undefined
+                                    }}>
                                         {/* Card Effects */}
                                         <div className="card-noise" />
                                         <div className="card-shine" />
@@ -1134,7 +1225,7 @@ const Dashboard = ({ setAuthenticated }) => {
                                                 <div className="card-info-column">
                                                     <span className="card-label">HOLDER</span>
                                                     <span className="card-value">{holderName}</span>
-                                                    <span className="card-provider">SETU CONSENT</span>
+                                                    <span className="card-provider">VITTA CONSENT</span>
                                                 </div>
                                                 <div className="card-info-column" style={{textAlign: 'right'}}>
                                                     <span className="card-label">CREATED</span>
@@ -1154,9 +1245,9 @@ const Dashboard = ({ setAuthenticated }) => {
                                 </div>
                              );
                         })}
-                        {activeConsents.length > 1 && !isStackExpanded && (
+                        {activeConsents.length > 1 && !isStackExpanded && !isFloating && (
                             <div className="card-stack-hint">
-                                <ChevronDown size={14} /> Click to view all {activeConsents.length} accounts
+                                <ChevronDown size={14} /> Click to float all {activeConsents.length} accounts
                             </div>
                         )}
                     </div>
@@ -1241,44 +1332,7 @@ const Dashboard = ({ setAuthenticated }) => {
                     </div>
                 </div>
 
-                <div className="widget-card" style={{marginTop: '20px'}}>
-                     <div className="widget-header">
-                        <h3 className="widget-title">Consent Health</h3>
-                    </div>
-                    <div className="consent-timeline-list" style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
-                        {activeConsents.slice(0, 3).map((c, i) => {
-                            const daysLeft = c.consentExpiry ? Math.ceil((new Date(c.consentExpiry) - new Date()) / (1000 * 60 * 60 * 24)) : 30;
-                            const isCritical = daysLeft < 7;
-                            return (
-                                <div key={i} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px', background: 'var(--bg-secondary)', borderRadius: '8px'}}>
-                                    <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                        <div style={{
-                                            width: '24px', height: '24px', borderRadius: '50%', 
-                                            background: isCritical ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            color: isCritical ? '#ef4444' : '#22c55e'
-                                        }}>
-                                            <Clock size={14} />
-                                        </div>
-                                        <div style={{overflow: 'hidden'}}>
-                                            <div style={{fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '80px', overflow: 'hidden'}}>
-                                                {c.vua ? c.vua.split('@')[0] : `ID: ${c.id.slice(-4)}`}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div style={{textAlign: 'right'}}>
-                                        <span style={{
-                                            fontSize: '0.75rem', fontWeight: 600,
-                                            color: isCritical ? '#ef4444' : (daysLeft < 15 ? '#f59e0b' : '#22c55e')
-                                        }}>
-                                            {daysLeft}d
-                                        </span>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -1298,7 +1352,14 @@ const Dashboard = ({ setAuthenticated }) => {
 
   return (
     <div className={`dashboard-root ${theme === "light" ? "theme-light" : ""}`}>
-      <aside className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      
+      {/* Mobile Overlay */}
+      <div 
+        className={`sidebar-overlay ${isMobileMenuOpen ? 'active' : ''}`} 
+        onClick={() => setIsMobileMenuOpen(false)}
+      ></div>
+
+      <aside className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''} ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         <div className="logo" style={{justifyContent: isSidebarCollapsed ? 'center' : 'flex-start', padding: isSidebarCollapsed ? '0' : '0 4px'}}>
           <div className="logo-icon-box" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} style={{cursor: 'pointer'}}>
             {isSidebarCollapsed ? <ChevronRight size={20} color="white" /> : <Zap size={20} fill="currentColor" />}
@@ -1349,6 +1410,15 @@ const Dashboard = ({ setAuthenticated }) => {
       <main className="dashboard-main">
         <header className="dashboard-header" style={{gap: '20px'}}>
           <div className="header-left" style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
+            
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="mobile-menu-toggle" 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <Menu size={24} />
+            </button>
+
             <div>
                 <h2>{currentInfo.title}</h2>
                 <p>{currentInfo.subtitle}</p>
@@ -1542,8 +1612,6 @@ const Dashboard = ({ setAuthenticated }) => {
                           style={{ 
                               background: styleObj.background,
                               ...styleObj.vars,
-                              minWidth: '420px',
-                              height: '265px',
                               cursor: 'pointer',
                               border: consentId === consent.id ? '2px solid #fff' : 'none',
                               transform: consentId === consent.id ? 'scale(1.02)' : 'scale(1)',
@@ -1554,7 +1622,7 @@ const Dashboard = ({ setAuthenticated }) => {
                           
                           {/* Top Row */}
                           <div className="card-top-row">
-                              <div className="provider-logo" style={{ fontSize: '1.4rem' }}>SETU<span className="font-light">CONSENT</span></div>
+                              <div className="provider-logo" style={{ fontSize: '1.4rem' }}>VITTA<span className="font-light">CONSENT</span></div>
                               <div className="status-badge-pill">
                                   <span className={`status-dot-pulse ${consent.status?.toLowerCase()}`}></span>
                                   <span className="status-label">{consent.status}</span>
@@ -1618,11 +1686,6 @@ const Dashboard = ({ setAuthenticated }) => {
                   <div className="empty-state">
                     <div className="empty-icon">📂</div>
                     <div className="empty-title">No transactions yet</div>
-                    <div className="empty-subtitle">Fetch with a consent ID to populate the feed.</div>
-                    <details>
-                      <summary>Show raw backend response</summary>
-                      <pre className="raw-response">{JSON.stringify(rawResponse, null, 2)}</pre>
-                    </details>
                   </div>
                 )}
                 {!loading && !error && transactions.length > 0 && (
